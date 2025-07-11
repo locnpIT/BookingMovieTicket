@@ -3,9 +3,13 @@ package com.example.phuocloc.bookingmovieticket.model;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.example.phuocloc.bookingmovieticket.enums.RoomType;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -25,6 +29,9 @@ public class Room extends BaseEntity {
 
     @Column(nullable = false)
     private int capacity;
+
+    @Enumerated(EnumType.STRING)
+    private RoomType type;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "theater_id", nullable = false)

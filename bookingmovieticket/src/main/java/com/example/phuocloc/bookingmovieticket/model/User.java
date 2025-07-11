@@ -1,7 +1,10 @@
 package com.example.phuocloc.bookingmovieticket.model;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
+
+import org.springframework.boot.context.properties.bind.DefaultValue;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -23,12 +26,19 @@ public class User extends BaseEntity{
     private String firstName;
     private String lastName;
     private String email;
+    @Column(length = 20)
+    private String phone;
     private String password;
     @Column(length = 6)
     private String verificationCode;
 
+    @Column(columnDefinition = "TEXT")
+    private String avatarUrl = "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg";
+
     @Column(nullable = false)
     private boolean isVerified = false;
+
+    private LocalDateTime lastLogin;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "role_id", nullable = false)

@@ -4,14 +4,19 @@ import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.example.phuocloc.bookingmovieticket.enums.MovieStatus;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
+import jakarta.websocket.Decoder.Text;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -39,6 +44,12 @@ public class Movie extends BaseEntity{
     private String language;
 
     private Double avgRating;
+
+    @Column(columnDefinition = "TEXT")
+    private String description;
+
+    @Enumerated(EnumType.STRING)
+    private MovieStatus status;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(

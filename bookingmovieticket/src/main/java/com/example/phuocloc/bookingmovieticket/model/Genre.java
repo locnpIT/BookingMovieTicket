@@ -22,6 +22,11 @@ public class Genre extends BaseEntity {
     @ManyToMany(mappedBy = "genres")
     private Set<Movie> movies = new HashSet<>();
     
+    @Column(unique = true)
+    private String slug;
+
+    private String description;
+
 
 
 

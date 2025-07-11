@@ -2,8 +2,12 @@ package com.example.phuocloc.bookingmovieticket.model;
 
 import java.time.LocalDateTime;
 
+import com.example.phuocloc.bookingmovieticket.enums.ShowtimeStatus;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.Getter;
@@ -34,6 +38,9 @@ public class Showtime extends BaseEntity{
 
     @Column(nullable = false)
     private int availableSeats;
+
+    @Enumerated(EnumType.STRING)
+    private ShowtimeStatus status;
     
     @ManyToOne
     @JoinColumn(name = "room_id")
