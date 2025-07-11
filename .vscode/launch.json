@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-BookingmovieticketApplication<bookingmovieticket>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.example.phuocloc.bookingmovieticket.BookingmovieticketApplication",
+            "projectName": "bookingmovieticket",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}
