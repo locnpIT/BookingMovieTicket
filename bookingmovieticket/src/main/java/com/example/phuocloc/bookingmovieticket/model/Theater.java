@@ -33,6 +33,9 @@ public class Theater extends BaseEntity{
     private Double latitude;
     private Double longitude;
 
+    @Column(length = 1000)
+    private String imageUrl;
+
     
 
     @OneToMany(mappedBy = "theater", fetch = FetchType.LAZY)

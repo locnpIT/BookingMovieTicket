@@ -66,6 +66,24 @@ public class Movie extends BaseEntity{
     private Set<Showtime> showtimes = new HashSet<>();
     
 
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+        name = "movie_directors",
+        joinColumns = @JoinColumn(name = "movie_id"),
+        inverseJoinColumns = @JoinColumn(name = "director_id")
+    )
+    private Set<Director> directors = new HashSet<>();
+
+    
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+        name = "movie_authors",
+        joinColumns = @JoinColumn(name = "movie_id"),
+        inverseJoinColumns = @JoinColumn(name = "author_id")
+    )
+    private Set<Author> authors = new HashSet<>();
+
+
 
 
 

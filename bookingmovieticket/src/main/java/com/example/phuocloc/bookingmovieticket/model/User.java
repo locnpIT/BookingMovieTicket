@@ -1,10 +1,10 @@
 package com.example.phuocloc.bookingmovieticket.model;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.springframework.boot.context.properties.bind.DefaultValue;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -31,6 +31,9 @@ public class User extends BaseEntity{
     private String password;
     @Column(length = 6)
     private String verificationCode;
+
+    
+    private LocalDate dateOfBirth;
 
     @Column(columnDefinition = "TEXT")
     private String avatarUrl = "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg";
