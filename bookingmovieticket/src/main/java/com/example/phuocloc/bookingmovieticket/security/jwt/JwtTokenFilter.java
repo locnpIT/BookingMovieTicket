@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -11,7 +12,9 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.servlet.HandlerExceptionResolver;
 
+import com.example.phuocloc.bookingmovieticket.exception.JwtValidationException;
 import com.example.phuocloc.bookingmovieticket.model.Role;
 import com.example.phuocloc.bookingmovieticket.model.User;
 import com.example.phuocloc.bookingmovieticket.repository.RoleRepository;
@@ -30,11 +33,36 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     @Autowired JwtUtility jwtUltil;
     @Autowired RoleRepository roleRepository;
 
+    @Autowired
+    @Qualifier("handlerExceptionResolver")
+    HandlerExceptionResolver exceptionResolver;
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         // TODO Auto-generated method stub
-        
+
+        if(!hasAuthorizationBearer(request)){
+            filterChain.doFilter(request, response);
+            return;
+        }
+        String token = getBearerToken(request);
+
+        try{
+            Claims claims = jwtUltil.validateAccessToken(token);
+
+            UserDetails userDetails = getUserDetails(claims);
+
+            setAuthenticationContext(userDetails, request);
+
+            filterChain.doFilter(request, response);
+            
+            clearAuthenticationContext();
+
+        }
+        catch(JwtValidationException ex){
+            exceptionResolver.resolveException(request, response, null, ex);
+        }
         
 
     }

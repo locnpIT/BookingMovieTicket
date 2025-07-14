@@ -11,7 +11,5 @@ import com.example.phuocloc.bookingmovieticket.model.User;
 public interface UserRepository extends JpaRepository<User, Long> {
 
     public Optional<User> findByEmail(String email);
-
-    public User save(User user);
     
 }
