@@ -5,6 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.validation.constraints.Min;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -24,9 +25,11 @@ public class BookingProduct extends BaseEntity {
     private Product product;
 
     @Column(nullable = false)
+    @Min(value = 1, message = "Quantity must be at least 1!")
     private int quantity;
 
     @Column(nullable = false)
+    @Min(value = 0, message = "Price must be positive!")
     private Double priceAtPurchase; // gia tai thoi diem mua
 
 

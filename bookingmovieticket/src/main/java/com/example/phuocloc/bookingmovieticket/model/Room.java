@@ -14,6 +14,8 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -25,9 +27,11 @@ import lombok.Setter;
 public class Room extends BaseEntity {
 
     @Column(nullable = false, length = 50)
+    @NotBlank(message = "Roomnumber is required!")
     private String roomNumber;
 
     @Column(nullable = false)
+    @Min(value = 1, message = "Capacity must be at least 1!")
     private int capacity;
 
     @Enumerated(EnumType.STRING)

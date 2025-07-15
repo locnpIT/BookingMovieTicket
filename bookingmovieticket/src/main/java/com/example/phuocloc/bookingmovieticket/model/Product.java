@@ -7,6 +7,8 @@ import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -18,9 +20,11 @@ import lombok.Setter;
 public class Product extends BaseEntity {
     
     @Column(nullable = false, length = 100)
+    @NotBlank(message = "Name is required!")
     private String name;
 
     @Column(nullable = false)
+    @Min(value = 0, message = "Price must be positive!")
     private Double price;
 
     @Column(columnDefinition = "TEXT")
@@ -30,6 +34,7 @@ public class Product extends BaseEntity {
     private String imageUrl;
 
     @Column(nullable = false)
+    @Min(value = 0, message = "Inventory must be positive!")
     private int inventory;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)

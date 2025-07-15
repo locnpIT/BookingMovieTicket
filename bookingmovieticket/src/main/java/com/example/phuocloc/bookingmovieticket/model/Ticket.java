@@ -9,6 +9,8 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -20,8 +22,10 @@ import lombok.Setter;
 public class Ticket extends BaseEntity{
 
     @Column(unique = true, length = 50)
+    @NotBlank(message = "Ticket code is required!")
     private String ticketCode;
 
+    @Min(value = 0, message = "Price must be positive!")
     private Double price;
 
     @Column(length = 1000)

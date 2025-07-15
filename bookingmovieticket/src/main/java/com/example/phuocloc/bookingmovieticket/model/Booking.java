@@ -17,6 +17,8 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -28,8 +30,10 @@ import lombok.Setter;
 public class Booking extends BaseEntity {
     
     @Column(unique = true, length = 50, nullable = false)
+    @NotBlank(message = "Booking Code is required!")
     private String bookingCode;
 
+    @Min(value = 0, message = "Total price must be positive!")
     private Double totalPrice;
 
     @Enumerated(EnumType.STRING)

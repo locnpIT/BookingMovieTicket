@@ -7,6 +7,7 @@ import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -19,6 +20,7 @@ public class Role extends BaseEntity{
 
     
     @Column(name = "name", length = 50)
+    @NotBlank(message = "Name is required!")
     private String name;
     
     @Column(name = "description", columnDefinition = "TEXT")

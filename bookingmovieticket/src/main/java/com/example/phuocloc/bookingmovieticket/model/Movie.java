@@ -16,7 +16,10 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
-import jakarta.websocket.Decoder.Text;
+import jakarta.validation.constraints.FutureOrPresent;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -29,20 +32,30 @@ public class Movie extends BaseEntity{
 
 
     @Column(length = 1000)
+    @NotBlank(message = "The title is required!")
     private String title;
 
+    @Min(value = 1, message = "Duration must be at least 1 minute!")
     private int duration;
 
+    @NotBlank(message = "Release date is required!")
+    @FutureOrPresent(message = "Release date must be present or future!")
     private LocalDate releaseDate;
 
+    @Column(length = 2000)
     private String imageUrl;
 
+    @Column(length = 2000)
     private String trailerUrl;
 
+    @NotBlank(message = "Age rating is required!")
     private String ageRating;
 
+    @NotBlank(message = "Language is required!")
     private String language;
 
+    @Min(value = 0)
+    @Max(value = 10)
     private Double avgRating;
 
     @Column(columnDefinition = "TEXT")

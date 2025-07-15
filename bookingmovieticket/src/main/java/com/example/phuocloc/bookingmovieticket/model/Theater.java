@@ -9,6 +9,8 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -19,14 +21,18 @@ import lombok.Setter;
 @RequiredArgsConstructor
 public class Theater extends BaseEntity{
     
+    @NotBlank(message = "Name is required!")
     private String name;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "province_id", nullable = false)
     private Province province;
 
+    @Column(length = 500)
+    @NotBlank(message = "Address is required!")
     private String address;
     
     @Column(length = 20)
+    @Pattern(regexp = "^\\+?[0-9]{10,20}$", message = "Invalid phone number!")
     private String phoneNumber;
 
     // sau nayf dung google map

@@ -12,6 +12,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.validation.constraints.Min;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -22,6 +23,7 @@ import lombok.Setter;
 @RequiredArgsConstructor
 public class Payment extends BaseEntity {
     
+    @Min(value = 0, message = "Amount must be positive!")
     private Double amount;
 
     @Enumerated(EnumType.STRING)
