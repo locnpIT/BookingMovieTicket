@@ -39,7 +39,7 @@ public class JwtUtility {
 
         long expirationTimeInMillis = System.currentTimeMillis() + accessTokenExpiration * 60000;
 
-        String subject = String.format("%s%s", user.getId(), user.getEmail());
+        String subject = String.format("%d,%s", user.getId(), user.getEmail());
         return Jwts.builder()
             .subject(subject)
             .issuer(issuerName)

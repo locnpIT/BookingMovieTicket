@@ -1,7 +1,6 @@
 package com.example.phuocloc.bookingmovieticket.security.jwt;
 
 import java.io.IOException;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -114,8 +113,10 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         user.setId(userId);
         user.setEmail(email);
         
-        String roleString = (String)claims.get("role_id");
-        Long roleId = Long.valueOf(roleString);
+        // String roleString = (String)claims.get("role_id");
+
+        Number roleIdNum = (Number) claims.get("role_id");
+        Long roleId = roleIdNum.longValue();
         Role role = roleRepository.findById(roleId).get();
 
         user.setRole(role);

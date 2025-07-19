@@ -20,6 +20,7 @@ import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -38,7 +39,7 @@ public class Movie extends BaseEntity{
     @Min(value = 1, message = "Duration must be at least 1 minute!")
     private int duration;
 
-    @NotBlank(message = "Release date is required!")
+    @NotNull(message = "Release date is required!")
     @FutureOrPresent(message = "Release date must be present or future!")
     private LocalDate releaseDate;
 
