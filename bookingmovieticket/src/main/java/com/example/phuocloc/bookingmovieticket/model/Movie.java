@@ -99,8 +99,7 @@ public class Movie extends BaseEntity{
 
 
 
+    @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private Set<Banner> banners = new HashSet<>();
 
-
-
-    
 }

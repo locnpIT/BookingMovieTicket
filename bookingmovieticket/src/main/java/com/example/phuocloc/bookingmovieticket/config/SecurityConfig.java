@@ -16,8 +16,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.intercept.AuthorizationFilter;
 
+import com.example.phuocloc.bookingmovieticket.response.ErrorResponse;
 import com.example.phuocloc.bookingmovieticket.security.CustomUserDetailsService;
 import com.example.phuocloc.bookingmovieticket.security.jwt.JwtTokenFilter;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -56,16 +58,29 @@ public class SecurityConfig {
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
-        http.authorizeHttpRequests(auth -> auth.requestMatchers("/api/oauth/**", "/**").permitAll()
-            .anyRequest().authenticated())
+        http.authorizeHttpRequests(auth -> 
+        auth.requestMatchers("/api/oauth/**").permitAll()
+        .requestMatchers(HttpMethod.GET, "/api/movies/**").permitAll()
+        .anyRequest().authenticated())
         .csrf(csrf -> csrf.disable())
         .exceptionHandling(exh -> exh.authenticationEntryPoint(
-            (request, response, exception) -> {
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, exception.getMessage());
-            }
+                (request, response, exception) -> {
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    response.setContentType("application/json");
+                    response.getWriter().write(
+                        new ObjectMapper().writeValueAsString(
+                            new ErrorResponse("Unauthorized", exception.getMessage())
+                        )
+                    );
+                }
             ))
-        .addFilterBefore(jwtFilter, AuthorizationFilter.class);
+            .addFilterBefore(jwtFilter, AuthorizationFilter.class);
+
         return http.build();
     }
+
+    
+
+    
 
 }

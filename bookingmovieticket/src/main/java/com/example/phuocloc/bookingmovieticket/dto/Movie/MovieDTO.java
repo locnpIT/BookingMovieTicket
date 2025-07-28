@@ -1,7 +1,9 @@
-package com.example.phuocloc.bookingmovieticket.dto;
+package com.example.phuocloc.bookingmovieticket.dto.Movie;
 
 import java.time.LocalDate;
 import java.util.Set;
+
+import com.example.phuocloc.bookingmovieticket.enums.MovieStatus;
 
 import lombok.Data;
 
@@ -16,6 +18,7 @@ public class MovieDTO {
     private Double avgRating;
     private String language;
     private String ageRating;
+    private MovieStatus status;
     private Set<String> genreNames;
 
 }
