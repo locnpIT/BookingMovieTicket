@@ -1,6 +1,7 @@
 package com.example.phuocloc.bookingmovieticket.service;
 
 import com.example.phuocloc.bookingmovieticket.dto.UserDTO;
+import com.example.phuocloc.bookingmovieticket.exception.DuplicateResourceException;
 import com.example.phuocloc.bookingmovieticket.mapper.UserMapper;
 import com.example.phuocloc.bookingmovieticket.model.User;
 import com.example.phuocloc.bookingmovieticket.repository.UserRepository;
@@ -31,6 +32,10 @@ public class UserService {
 
     @Transactional
     public UserDTO saveUser(UserCreateDTO dto) {
+        
+        if (userRepository.findByEmail(dto.getEmail()).isPresent()) {
+            throw new DuplicateResourceException("Email đã tồn tại");
+        }
 
         String otp = generateVertificationCode();
         

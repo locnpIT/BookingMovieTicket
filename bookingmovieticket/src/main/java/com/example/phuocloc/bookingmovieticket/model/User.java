@@ -2,6 +2,7 @@ package com.example.phuocloc.bookingmovieticket.model;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -14,6 +15,9 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
+import jakarta.persistence.Index;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -24,6 +28,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 @Entity
+@Table(name="user",
+   uniqueConstraints=@UniqueConstraint(name="uk_user_email", columnNames="email"),
+   indexes=@Index(name="idx_user_role", columnList="role_id"))
 @Getter
 @Setter
 @RequiredArgsConstructor
@@ -58,14 +65,12 @@ public class User extends BaseEntity{
     @Column(nullable = false)
     private boolean isVerified = false;
 
-    private LocalDateTime lastLogin;
+    private OffsetDateTime lastLogin;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "role_id", nullable = false)
     private Role role;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private Set<Review> reviews = new HashSet<>();
 
 
 

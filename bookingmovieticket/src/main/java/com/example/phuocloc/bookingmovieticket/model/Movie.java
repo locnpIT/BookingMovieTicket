@@ -73,8 +73,7 @@ public class Movie extends BaseEntity{
     )
     private Set<Genre> genres = new HashSet<>();
 
-    @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private Set<Review> reviews = new HashSet<>();
+
 
     @OneToMany(mappedBy = "movie", fetch = FetchType.LAZY)
     private Set<Showtime> showtimes = new HashSet<>();

@@ -1,6 +1,8 @@
 package com.example.phuocloc.bookingmovieticket.model;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 import com.example.phuocloc.bookingmovieticket.enums.PaymentMethod;
 import com.example.phuocloc.bookingmovieticket.enums.PaymentStatus;
@@ -12,7 +14,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.DecimalMin;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -23,8 +25,8 @@ import lombok.Setter;
 @RequiredArgsConstructor
 public class Payment extends BaseEntity {
     
-    @Min(value = 0, message = "Amount must be positive!")
-    private Double amount;
+    @DecimalMin(value = "0.00", message = "Amount must be positive!")
+    private BigDecimal amount;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -37,7 +39,7 @@ public class Payment extends BaseEntity {
     @Column(nullable = false)
     private PaymentStatus status = PaymentStatus.PENDING;
 
-    LocalDateTime paymentTime;
+    private OffsetDateTime paymentTime;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "booking_id", nullable = false)

@@ -23,7 +23,7 @@ public class Province extends BaseEntity{
     @NotBlank(message = "Name is required!")
     private String name;
 
-    @OneToMany(mappedBy = "province", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "province", fetch = FetchType.LAZY)
     private Set<Theater> theaters = new HashSet<>();
     
 }

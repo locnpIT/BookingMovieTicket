@@ -1,5 +1,6 @@
 package com.example.phuocloc.bookingmovieticket.model;
 
+import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -7,6 +8,7 @@ import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
+import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
@@ -24,8 +26,8 @@ public class Product extends BaseEntity {
     private String name;
 
     @Column(nullable = false)
-    @Min(value = 0, message = "Price must be positive!")
-    private Double price;
+    @DecimalMin(value = "0.00", message = "Price must be positive!")
+    private BigDecimal price;
 
     @Column(columnDefinition = "TEXT")
     private String description;

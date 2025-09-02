@@ -1,6 +1,7 @@
 package com.example.phuocloc.bookingmovieticket.model;
 
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -37,11 +38,11 @@ public class Banner extends BaseEntity {
 
     @Column(nullable = false)
     @NotNull(message = "Start date is required!")
-    private LocalDateTime startDate;
+    private OffsetDateTime startDate;
 
     @Column(nullable = false)
     @NotNull(message = "End date is required!")
-    private LocalDateTime endDate;
+    private OffsetDateTime endDate;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

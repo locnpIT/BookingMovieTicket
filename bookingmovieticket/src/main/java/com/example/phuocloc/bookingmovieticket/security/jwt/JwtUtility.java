@@ -46,6 +46,8 @@ public class JwtUtility {
             .issuedAt(new Date())
             .expiration(new Date(expirationTimeInMillis))
             .claim("email", user.getEmail())
+            .claim("firstName", user.getFirstName())
+            .claim("lastName", user.getLastName())
             .claim("role_id", user.getRole().getId())
             .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()), io.jsonwebtoken.SignatureAlgorithm.HS512)
             .compact();

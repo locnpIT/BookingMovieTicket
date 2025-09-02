@@ -3,6 +3,7 @@ package com.example.phuocloc.bookingmovieticket.dto;
 import lombok.Data;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 @Data
 public class UserDTO {
@@ -14,6 +15,6 @@ public class UserDTO {
     private boolean isVerified;
     private String avatarUrl;
     private LocalDate dateOfBirth;
-    private LocalDateTime lastLogin;
+    private OffsetDateTime lastLogin;
     private String roleName;
 }

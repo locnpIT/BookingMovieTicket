@@ -47,9 +47,5 @@ public class Theater extends BaseEntity{
     @OneToMany(mappedBy = "theater", fetch = FetchType.LAZY)
     private Set<Room> rooms = new HashSet<>();
 
-    @OneToMany(mappedBy = "theater", fetch = FetchType.LAZY)
-    private Set<Showtime> showtimes = new HashSet<>();
-
-
     
 }

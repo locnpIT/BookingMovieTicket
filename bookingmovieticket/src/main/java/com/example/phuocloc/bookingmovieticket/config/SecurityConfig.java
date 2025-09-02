@@ -56,6 +56,8 @@ public class SecurityConfig {
         return authConfig.getAuthenticationManager();
     }
 
+    
+
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
         http.authorizeHttpRequests(auth -> 

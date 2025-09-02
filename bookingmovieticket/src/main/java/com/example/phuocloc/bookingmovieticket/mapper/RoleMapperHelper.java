@@ -4,6 +4,7 @@ import com.example.phuocloc.bookingmovieticket.model.Role;
 import com.example.phuocloc.bookingmovieticket.repository.RoleRepository;
 
 import org.mapstruct.Named;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -17,7 +18,11 @@ public class RoleMapperHelper {
 
     @Named("mapDefaultRole")
     public Role mapDefaultRole(Object source) {
-        return roleRepository.findById(1L)
-                .orElseThrow(() -> new IllegalArgumentException("Default role with id 1 not found"));
+        String roleName = defaultRoleName != null ? defaultRoleName.trim() : "USER";
+        return roleRepository.findByName(roleName)
+                .orElseThrow(() -> new IllegalStateException("Default role '" + roleName + "' not found"));
     }
+
+    @Value("${app.security.default-role:USER}")
+    private String defaultRoleName;
 }

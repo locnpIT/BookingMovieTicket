@@ -22,7 +22,6 @@ public interface MovieMapper {
     @Mapping(target = "directors", ignore = true)
     @Mapping(target = "authors", ignore = true)
     @Mapping(target = "showtimes", ignore = true)
-    @Mapping(target = "reviews", ignore = true)
     @Mapping(target = "avgRating", constant = "0.0") 
     @Mapping(target = "status", constant = "UPCOMING")
     Movie toMovie(MovieCreateDTO dto);

@@ -1,6 +1,8 @@
 package com.example.phuocloc.bookingmovieticket.model;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -17,7 +19,7 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -33,14 +35,14 @@ public class Booking extends BaseEntity {
     @NotBlank(message = "Booking Code is required!")
     private String bookingCode;
 
-    @Min(value = 0, message = "Total price must be positive!")
-    private Double totalPrice;
+    @DecimalMin(value = "0.00", message = "Total price must be positive!")
+    private BigDecimal totalPrice;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private BookingStatus status = BookingStatus.PENDING;
 
-    private LocalDateTime bookingTime = LocalDateTime.now();
+    private OffsetDateTime bookingTime = OffsetDateTime.now();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
@@ -49,14 +51,6 @@ public class Booking extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "showtime_id", nullable = false)
     private Showtime showtime;
-
-    @ManyToMany
-    @JoinTable(
-        name = "booking_seats",
-        joinColumns = @JoinColumn(name = "booking_id"),
-        inverseJoinColumns = @JoinColumn(name = "seat_id")
-    )
-    private Set<Seat> seats = new HashSet<>();
 
     @OneToMany(mappedBy = "booking", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Ticket> tickets = new HashSet<>();
