@@ -1,15 +1,14 @@
-import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
+import { useModal } from '../../context/ModalContext'
 
 export default function Navbar() {
   const { token, logout, user } = useAuth()
+  const { showLogin } = useModal()
   const navigate = useNavigate()
-  const location = useLocation()
-
-  const isAuthPage = location.pathname === '/login' || location.pathname === '/register'
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b bg-white/90 backdrop-blur shadow-sm">
+    <header className="sticky top-0 z-40 w-full bg-white/90 backdrop-blur shadow-sm">
       <div className="mx-auto grid h-16 max-w-6xl grid-cols-3 items-center px-4">
         {/* Left: Brand */}
         <div className="flex items-center gap-2">
@@ -44,12 +43,9 @@ export default function Navbar() {
         {/* Right: Auth */}
         <nav className="ml-auto flex items-center justify-end gap-3 text-sm">
           {!token ? (
-            !isAuthPage && (
-              <>
-                <Link to="/login" className="text-gray-700 hover:text-sky-700">Đăng nhập</Link>
-                <Link to="/register" className="rounded bg-sky-600 px-3 py-1.5 text-white hover:bg-sky-700">Đăng ký</Link>
-              </>
-            )
+            <>
+              <button onClick={showLogin} className="rounded bg-gradient-to-r from-sky-600 to-indigo-600 px-3 py-1.5 text-white hover:from-sky-700 hover:to-indigo-700 cursor-pointer">Đăng nhập</button>
+            </>
           ) : (
             <>
               <span className="hidden sm:inline text-gray-600">{
@@ -59,7 +55,7 @@ export default function Navbar() {
                 })()
               }</span>
               <button
-                onClick={() => { logout(); navigate('/login') }}
+                onClick={() => { logout(); navigate('/') }}
                 className="rounded bg-gray-900 px-3 py-1.5 text-white hover:bg-gray-800"
               >
                 Đăng xuất

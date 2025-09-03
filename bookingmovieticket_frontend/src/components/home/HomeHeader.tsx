@@ -17,13 +17,13 @@ export default function HomeHeader({
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div className="flex items-start gap-3">
           <div className="mt-0.5 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white shadow ring-1 ring-white/60">
-            <span className="text-xl">🎬</span>
+            <span className="text-2xl">🎬</span>
           </div>
           <div>
-            <h1 className="bg-gradient-to-r from-sky-700 to-indigo-700 bg-clip-text text-2xl font-bold text-transparent">
-              PhuocLocCine
+            <h1 className="bg-gradient-to-r from-sky-700 to-indigo-700 bg-clip-text text-transparent text-3xl font-extrabold md:text-4xl">
+              Trải nghiệm điện ảnh đỉnh cao
             </h1>
-            <p className="text-sm text-gray-600">Đặt vé nhanh – xem phim hay, ưu đãi ngập tràn</p>
+            <p className="mt-1 text-sm text-gray-600 md:text-base">Đặt vé chỉ trong vài giây • ưu đãi mỗi ngày</p>
           </div>
         </div>
         <div className="flex flex-col gap-7 sm:flex-row sm:items-center">

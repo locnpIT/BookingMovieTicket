@@ -16,9 +16,9 @@ export default function MovieSection({ title, movies }: { title: string; movies:
           {title}
         </h2>
         <div className="hidden gap-2 md:flex">
-          <button onClick={() => scrollByDir(-1)} className="rounded-full bg-white/90 p-2 text-gray-700 shadow-sm hover:bg-white hover:shadow">‹</button>
-          <button onClick={() => scrollByDir(1)} className="rounded-full bg-white/90 p-2 text-gray-700 shadow-sm hover:bg-white hover:shadow">›</button>
-        </div>
+          <button onClick={() => scrollByDir(-1)} className="rounded-full bg-white/90 p-2 text-gray-700 shadow-sm hover:bg-white hover:shadow cursor-pointer">‹</button>
+          <button onClick={() => scrollByDir(1)} className="rounded-full bg-white/90 p-2 text-gray-700 shadow-sm hover:bg-white hover:shadow cursor-pointer">›</button>
+      </div>
       </div>
       <div ref={ref} className="scrollbar-none flex snap-x gap-6 overflow-x-auto rounded-2xl p-1">
         {movies.map((m) => (

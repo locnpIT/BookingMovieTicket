@@ -8,9 +8,10 @@ type ModalProps = {
   children?: ReactNode
   primaryAction?: { label: string; onClick: () => void }
   secondaryAction?: { label: string; onClick: () => void }
+  size?: 'sm' | 'md' | 'lg'
 }
 
-export default function Modal({ open, onClose, title, children, primaryAction, secondaryAction }: ModalProps) {
+export default function Modal({ open, onClose, title, children, primaryAction, secondaryAction, size = 'md' }: ModalProps) {
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       if (e.key === 'Escape') onClose()
@@ -20,12 +21,23 @@ export default function Modal({ open, onClose, title, children, primaryAction, s
   }, [open, onClose])
 
   if (!open) return null
+  const maxW = size === 'lg' ? 'max-w-lg' : size === 'sm' ? 'max-w-sm' : 'max-w-md'
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div className="absolute inset-0 bg-black/40" onClick={onClose} />
-      <div className="relative z-10 w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
-        {title && <h3 className="mb-2 text-lg font-semibold text-gray-900">{title}</h3>}
+      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
+      <div className={`relative z-10 w-full ${maxW} rounded-2xl bg-white p-6 shadow-2xl ring-1 ring-gray-100`}>
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label="Đóng"
+          title="Đóng"
+          className="absolute right-3 top-3 inline-flex h-8 w-8 items-center justify-center rounded-full bg-red-50 text-red-600 ring-1 ring-red-100 hover:bg-red-100"
+        >
+          ×
+        </button>
+        {title && <h3 className="mb-2 text-xl font-semibold text-gray-900">{title}</h3>}
         <div className="text-sm text-gray-700">{children}</div>
+        {(primaryAction || secondaryAction) && (
         <div className="mt-5 flex justify-end gap-3">
           {secondaryAction && (
             <button
@@ -44,8 +56,8 @@ export default function Modal({ open, onClose, title, children, primaryAction, s
             </button>
           )}
         </div>
+        )}
       </div>
     </div>
   )
 }
-
