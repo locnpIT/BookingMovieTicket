@@ -1,4 +1,4 @@
-package com.example.phuocloc.bookingmovieticket.dto;
+package com.example.phuocloc.bookingmovieticket.dto.User;
 
 import lombok.Data;
 import java.time.LocalDate;

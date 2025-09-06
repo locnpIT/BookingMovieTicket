@@ -1,6 +1,6 @@
 package com.example.phuocloc.bookingmovieticket.mapper;
 
-import com.example.phuocloc.bookingmovieticket.dto.UserDTO;
+import com.example.phuocloc.bookingmovieticket.dto.User.UserDTO;
 import com.example.phuocloc.bookingmovieticket.model.User;
 import com.example.phuocloc.bookingmovieticket.request.UserCreateDTO;
 

@@ -1,6 +1,6 @@
 package com.example.phuocloc.bookingmovieticket.Controller;
 
-import com.example.phuocloc.bookingmovieticket.dto.UserDTO;
+import com.example.phuocloc.bookingmovieticket.dto.User.UserDTO;
 import com.example.phuocloc.bookingmovieticket.request.UserCreateDTO;
 import com.example.phuocloc.bookingmovieticket.response.ApiResponse;
 import com.example.phuocloc.bookingmovieticket.service.UserService;

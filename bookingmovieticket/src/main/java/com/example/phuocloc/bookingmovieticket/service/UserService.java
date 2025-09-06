@@ -1,6 +1,6 @@
 package com.example.phuocloc.bookingmovieticket.service;
 
-import com.example.phuocloc.bookingmovieticket.dto.UserDTO;
+import com.example.phuocloc.bookingmovieticket.dto.User.UserDTO;
 import com.example.phuocloc.bookingmovieticket.exception.DuplicateResourceException;
 import com.example.phuocloc.bookingmovieticket.mapper.UserMapper;
 import com.example.phuocloc.bookingmovieticket.model.User;

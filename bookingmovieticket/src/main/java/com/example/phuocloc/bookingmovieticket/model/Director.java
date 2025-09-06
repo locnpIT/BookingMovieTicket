@@ -28,7 +28,7 @@ public class Director extends BaseEntity {
     @Column(columnDefinition = "TEXT")
     private String bio;
 
-    @Column(length = 1000)
+    @Column(columnDefinition = "TEXT")
     private String imageUrl;
 
     @ManyToMany(mappedBy = "directors", fetch = FetchType.LAZY)

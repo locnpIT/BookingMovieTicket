@@ -1,6 +1,8 @@
 package com.example.phuocloc.bookingmovieticket.exception;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -33,6 +35,21 @@ public class GlobalExceptionHandler {
                 .map(err -> err.getField() + ": " + err.getDefaultMessage())
                 .orElse("Validation error");
         ApiResponse<String> body = new ApiResponse<>(false, msg, null, HttpStatus.BAD_REQUEST.value(), LocalDateTime.now());
+        return ResponseEntity.badRequest().body(body);
+    }
+
+    // constraint trong modal, neu validation trong modal that bai thi nem ra exception nay
+   @ExceptionHandler(jakarta.validation.ConstraintViolationException.class)
+    public ResponseEntity<ApiResponse<String>> handleConstraintViolation(
+            jakarta.validation.ConstraintViolationException ex) {
+
+        String msg = ex.getConstraintViolations().stream()
+                .findFirst()
+                .map(v -> v.getMessage())
+                .orElse("Constraint violated");
+
+        ApiResponse<String> body = new ApiResponse<>(false, msg, null,
+                HttpStatus.BAD_REQUEST.value(), LocalDateTime.now());
         return ResponseEntity.badRequest().body(body);
     }
 }
