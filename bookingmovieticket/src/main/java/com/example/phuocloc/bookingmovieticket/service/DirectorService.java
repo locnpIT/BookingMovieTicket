@@ -50,7 +50,7 @@ public class DirectorService {
         }
     }
 
-    public List<DirectorDTO> getAllDirector(){
+    public List<DirectorDTO> getAllDirectors(){
 
         List<Director> listDirectors = this.directorRepository.findAll(Sort.by(Sort.Direction.ASC, "name"));
         return this.directorMapper.toListDTO(listDirectors);

@@ -69,7 +69,7 @@ public class DirectorController {
 
     @GetMapping
     public ResponseEntity<List<DirectorDTO>> getAllDirectors() {
-        List<DirectorDTO> directors = directorService.getAllDirector();
+        List<DirectorDTO> directors = directorService.getAllDirectors();
         return ResponseEntity.ok(directors);
     }
     
