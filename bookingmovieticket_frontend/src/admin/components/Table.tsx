@@ -2,9 +2,9 @@ import type { ReactNode } from 'react'
 
 export type Column<T> = { key: keyof T; header: string; render?: (row: T) => ReactNode }
 
-export default function Table<T>({ columns, rows }: { columns: Column<T>[]; rows: T[] }) {
+export default function Table<T>({ columns, rows, bordered = true }: { columns: Column<T>[]; rows: T[]; bordered?: boolean }) {
   return (
-    <div className="overflow-hidden rounded-xl border bg-white">
+    <div className={`overflow-hidden rounded-xl bg-white ${bordered ? 'border' : ''}`}>
       <table className="min-w-full divide-y divide-gray-200">
         <thead className="bg-gray-50">
           <tr>

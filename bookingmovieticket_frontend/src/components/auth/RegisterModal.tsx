@@ -1,4 +1,5 @@
-import { useState, FormEvent } from 'react'
+import { useState } from 'react'
+import type { FormEvent } from 'react'
 import Modal from '../ui/Modal'
 import TextField from '../ui/TextField'
 import PasswordField from '../ui/PasswordField'

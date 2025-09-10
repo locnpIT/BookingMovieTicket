@@ -31,6 +31,9 @@ public class Director extends BaseEntity {
     @Column(columnDefinition = "TEXT")
     private String imageUrl;
 
+    @Column(length = 255)
+    private String imagePublicId;
+
     @ManyToMany(mappedBy = "directors", fetch = FetchType.LAZY)
     private Set<Movie> movies = new HashSet<>();
 

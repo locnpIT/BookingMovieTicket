@@ -7,5 +7,5 @@ import com.example.phuocloc.bookingmovieticket.model.Author;
 
 @Repository
 public interface AuthorRepository extends JpaRepository<Author, Long>{
-    
+    long countByImageUrlIsNotNull();
 }

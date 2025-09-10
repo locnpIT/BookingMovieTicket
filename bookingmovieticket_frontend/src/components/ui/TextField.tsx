@@ -1,4 +1,4 @@
-import { InputHTMLAttributes } from 'react'
+import type { InputHTMLAttributes } from 'react'
 
 type Props = Omit<InputHTMLAttributes<HTMLInputElement>, 'onChange'> & {
   label: string
@@ -25,4 +25,3 @@ export default function TextField({ label, value, onChange, error, id, ...rest }
     </div>
   )
 }
-

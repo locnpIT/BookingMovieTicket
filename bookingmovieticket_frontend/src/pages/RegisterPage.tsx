@@ -1,4 +1,5 @@
-import { FormEvent, useState } from 'react'
+import { useState } from 'react'
+import type { FormEvent } from 'react'
 import { authApi } from '../services/api'
 import { Link } from 'react-router-dom'
 import AuthLayout from '../components/auth/AuthLayout'

@@ -10,4 +10,5 @@ public class DirectorCreateDTO {
     private LocalDate birthDate;
     private String bio;
     private String imageUrl;
+    private String imagePublicId;
 }
