@@ -11,6 +11,6 @@ public class DirectorUpdateDTO {
     private LocalDate birthDate;
     private String bio;
     private String imageUrl;
-    private String imagePublicId;
+    private String imagePublicId; 
 
 }

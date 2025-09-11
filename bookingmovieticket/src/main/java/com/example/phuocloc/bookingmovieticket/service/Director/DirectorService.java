@@ -1,4 +1,4 @@
-package com.example.phuocloc.bookingmovieticket.service;
+package com.example.phuocloc.bookingmovieticket.service.Director;
 
 import java.io.IOException;
 import java.util.List;
@@ -17,6 +17,7 @@ import com.example.phuocloc.bookingmovieticket.model.Director;
 import com.example.phuocloc.bookingmovieticket.repository.DirectorRepository;
 import com.example.phuocloc.bookingmovieticket.request.Director.DirectorCreateDTO;
 import com.example.phuocloc.bookingmovieticket.request.Director.DirectorUpdateDTO;
+import com.example.phuocloc.bookingmovieticket.service.Cloudinary.CloudinaryService;
 
 import lombok.RequiredArgsConstructor;
 

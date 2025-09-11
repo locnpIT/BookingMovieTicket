@@ -3,7 +3,8 @@ package com.example.phuocloc.bookingmovieticket.Controller;
 import com.example.phuocloc.bookingmovieticket.dto.User.UserDTO;
 import com.example.phuocloc.bookingmovieticket.request.UserCreateDTO;
 import com.example.phuocloc.bookingmovieticket.response.ApiResponse;
-import com.example.phuocloc.bookingmovieticket.service.UserService;
+import com.example.phuocloc.bookingmovieticket.service.User.UserService;
+
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

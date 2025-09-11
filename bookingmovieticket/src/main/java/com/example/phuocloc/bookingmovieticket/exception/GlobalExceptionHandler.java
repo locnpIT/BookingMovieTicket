@@ -38,6 +38,12 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(body);
     }
 
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ApiResponse<Void>> handleNotFound(ResourceNotFoundException ex) {
+        ApiResponse<Void> body = new ApiResponse<>(false, ex.getMessage(), null, HttpStatus.NOT_FOUND.value(), LocalDateTime.now());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
+    }
+
     // constraint trong modal, neu validation trong modal that bai thi nem ra exception nay
    @ExceptionHandler(jakarta.validation.ConstraintViolationException.class)
     public ResponseEntity<ApiResponse<String>> handleConstraintViolation(

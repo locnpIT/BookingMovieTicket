@@ -49,6 +49,7 @@ public class JwtUtility {
             .claim("firstName", user.getFirstName())
             .claim("lastName", user.getLastName())
             .claim("role_id", user.getRole().getId())
+            .claim("role", user.getRole().getName())
             .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()), io.jsonwebtoken.SignatureAlgorithm.HS512)
             .compact();
     }

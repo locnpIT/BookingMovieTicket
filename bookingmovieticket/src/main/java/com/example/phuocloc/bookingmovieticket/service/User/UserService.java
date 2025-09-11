@@ -1,4 +1,4 @@
-package com.example.phuocloc.bookingmovieticket.service;
+package com.example.phuocloc.bookingmovieticket.service.User;
 
 import com.example.phuocloc.bookingmovieticket.dto.User.UserDTO;
 import com.example.phuocloc.bookingmovieticket.exception.DuplicateResourceException;
@@ -6,6 +6,7 @@ import com.example.phuocloc.bookingmovieticket.mapper.UserMapper;
 import com.example.phuocloc.bookingmovieticket.model.User;
 import com.example.phuocloc.bookingmovieticket.repository.UserRepository;
 import com.example.phuocloc.bookingmovieticket.request.UserCreateDTO;
+import com.example.phuocloc.bookingmovieticket.service.Email.EmailService;
 
 import java.util.Optional;
 import java.util.Random;

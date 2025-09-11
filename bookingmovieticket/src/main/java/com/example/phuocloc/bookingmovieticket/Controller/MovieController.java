@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,7 +21,7 @@ import com.example.phuocloc.bookingmovieticket.enums.MovieStatus;
 import com.example.phuocloc.bookingmovieticket.request.Movie.MovieCreateDTO;
 import com.example.phuocloc.bookingmovieticket.request.Movie.MovieUpdateDTO;
 import com.example.phuocloc.bookingmovieticket.response.ApiResponse;
-import com.example.phuocloc.bookingmovieticket.service.MovieService;
+import com.example.phuocloc.bookingmovieticket.service.Movie.MovieService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -66,5 +67,13 @@ public class MovieController {
         return ResponseEntity.ok(movies);
     }
 
-}
+    @GetMapping("/paged")
+    public ResponseEntity<Page<MovieDTO>> getMoviesPaged(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) MovieStatus status) {
+        Page<MovieDTO> result = movieService.getMoviesPaged(status, page, size);
+        return ResponseEntity.ok(result);
+    }
 
+}

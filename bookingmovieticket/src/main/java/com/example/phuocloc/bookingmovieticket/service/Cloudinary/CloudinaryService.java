@@ -1,4 +1,4 @@
-package com.example.phuocloc.bookingmovieticket.service;
+package com.example.phuocloc.bookingmovieticket.service.Cloudinary;
 
 import java.io.IOException;
 import java.util.HashMap;

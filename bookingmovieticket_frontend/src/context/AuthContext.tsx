@@ -2,8 +2,8 @@ import { createContext, useContext, useEffect, useMemo, useState } from 'react'
 import type { ReactNode } from 'react'
 import { authApi } from '../services/api'
 
-type JwtPayload = { email?: string; firstName?: string; lastName?: string; [k: string]: unknown }
-type UserInfo = { email?: string; firstName?: string; lastName?: string } | null
+type JwtPayload = { email?: string; firstName?: string; lastName?: string; role?: string; [k: string]: unknown }
+type UserInfo = { email?: string; firstName?: string; lastName?: string; role?: string } | null
 type AuthState = {
   token: string | null
   user: UserInfo
@@ -41,15 +41,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     else localStorage.removeItem('accessToken')
     if (token) {
       const payload = parseJwt(token)
-      setUser(
-        payload
-          ? {
-              email: payload.email as string | undefined,
-              firstName: payload.firstName as string | undefined,
-              lastName: payload.lastName as string | undefined,
-            }
-          : null
-      )
+      setUser(payload ? {
+        email: payload.email as string | undefined,
+        firstName: payload.firstName as string | undefined,
+        lastName: payload.lastName as string | undefined,
+        role: (payload.role as string | undefined) || (payload.roleName as string | undefined),
+      } : null)
     } else {
       setUser(null)
     }
@@ -62,15 +59,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const { accessToken } = await authApi.login(email, password)
       setToken(accessToken)
       const payload = parseJwt(accessToken)
-      setUser(
-        payload
-          ? {
-              email: payload.email as string | undefined,
-              firstName: payload.firstName as string | undefined,
-              lastName: payload.lastName as string | undefined,
-            }
-          : null
-      )
+      setUser(payload ? {
+        email: payload.email as string | undefined,
+        firstName: payload.firstName as string | undefined,
+        lastName: payload.lastName as string | undefined,
+        role: (payload.role as string | undefined) || (payload.roleName as string | undefined),
+      } : null)
     },
     logout() {
       setToken(null)

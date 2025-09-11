@@ -4,7 +4,7 @@ const base = 'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium'
 
 export default function Sidebar() {
   return (
-    <aside className="hidden w-64 shrink-0 bg-white/90 p-4 backdrop-blur md:block sticky top-14 h-[calc(100vh-56px)] overflow-y-auto shadow-sm">
+    <aside className="w-64 shrink-0 bg-white/90 p-4 backdrop-blur md:sticky md:top-14 md:h-[calc(100vh-56px)] md:overflow-y-auto shadow-sm">
       <div className="mb-6 inline-flex items-center gap-2">
         <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white shadow ring-1 ring-white/60">🎬</span>
         <span className="bg-gradient-to-r from-sky-700 to-indigo-700 bg-clip-text text-lg font-semibold text-transparent">Admin</span>

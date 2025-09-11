@@ -1,4 +1,4 @@
-package com.example.phuocloc.bookingmovieticket.service;
+package com.example.phuocloc.bookingmovieticket.service.Director;
 
 import java.io.IOException;
 
@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.phuocloc.bookingmovieticket.model.Director;
 import com.example.phuocloc.bookingmovieticket.repository.DirectorRepository;
+import com.example.phuocloc.bookingmovieticket.service.Cloudinary.CloudinaryService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

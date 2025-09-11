@@ -7,7 +7,7 @@ import com.example.phuocloc.bookingmovieticket.dto.Director.DirectorDTO;
 import com.example.phuocloc.bookingmovieticket.request.Director.DirectorCreateDTO;
 import com.example.phuocloc.bookingmovieticket.request.Director.DirectorUpdateDTO;
 import com.example.phuocloc.bookingmovieticket.response.ApiResponse;
-import com.example.phuocloc.bookingmovieticket.service.DirectorService;
+import com.example.phuocloc.bookingmovieticket.service.Director.DirectorService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

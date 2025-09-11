@@ -1,4 +1,4 @@
-package com.example.phuocloc.bookingmovieticket.service;
+package com.example.phuocloc.bookingmovieticket.service.Movie;
 
 import java.util.HashSet;
 import java.util.List;
@@ -6,6 +6,8 @@ import java.util.Set;
 
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -14,11 +16,9 @@ import com.example.phuocloc.bookingmovieticket.dto.Movie.MovieDTO;
 import com.example.phuocloc.bookingmovieticket.enums.MovieStatus;
 import com.example.phuocloc.bookingmovieticket.exception.ResourceNotFoundException;
 import com.example.phuocloc.bookingmovieticket.mapper.MovieMapper;
-import com.example.phuocloc.bookingmovieticket.model.Author;
 import com.example.phuocloc.bookingmovieticket.model.Director;
 import com.example.phuocloc.bookingmovieticket.model.Genre;
 import com.example.phuocloc.bookingmovieticket.model.Movie;
-import com.example.phuocloc.bookingmovieticket.repository.AuthorRepository;
 import com.example.phuocloc.bookingmovieticket.repository.DirectorRepository;
 import com.example.phuocloc.bookingmovieticket.repository.GenreRepository;
 import com.example.phuocloc.bookingmovieticket.repository.MovieRepository;
@@ -33,7 +33,6 @@ public class MovieService {
     private final MovieRepository movieRepository;
     private final GenreRepository genreRepository;
     private final DirectorRepository directorRepository;
-    private final AuthorRepository authorRepository;
     private final MovieMapper movieMapper;
 
     @CacheEvict(value = "moviesCache", allEntries = true)
@@ -43,7 +42,6 @@ public class MovieService {
     
         movie.setGenres(new HashSet<>(genreRepository.findAllById(dto.getGenreIds())));
         movie.setDirectors(new HashSet<>(directorRepository.findAllById(dto.getDirectorIds())));
-        movie.setAuthors(new HashSet<>(authorRepository.findAllById(dto.getAuthorIds())));
 
         Movie saved = movieRepository.save(movie);
         return movieMapper.toMovieDTO(saved);
@@ -78,13 +76,13 @@ public class MovieService {
             }
             movie.setDirectors(directors);
         }
-        if (dto.getAuthorIds() != null) {
-            Set<Author> authors = new HashSet<>(authorRepository.findAllById(dto.getAuthorIds()));
-            if (authors.size() != dto.getAuthorIds().size()) {
-                throw new ResourceNotFoundException("Some authors not found!");
-            }
-            movie.setAuthors(authors);
-        }
+        // if (dto.getAuthorIds() != null) {
+
+        //     if (authors.size() != dto.getAuthorIds().size()) {
+        //         throw new ResourceNotFoundException("Some authors not found!");
+        //     }
+        //     movie.setAuthors(authors);
+        // }
 
         Movie updated = movieRepository.save(movie);
         return movieMapper.toMovieDTO(updated);
@@ -101,6 +99,14 @@ public class MovieService {
 
         return movieMapper.toMovieDTOList(movies);
     }
-}
 
+    public Page<MovieDTO> getMoviesPaged(MovieStatus status, int page, int size) {
+        Specification<Movie> spec = Specification.where(null);
+        if (status != null) {
+            spec = spec.and((root, query, cb) -> cb.equal(root.get("status"), status));
+        }
+        Page<Movie> p = movieRepository.findAll(spec, PageRequest.of(page, size, Sort.by("releaseDate").descending()));
+        return p.map(movieMapper::toMovieDTO);
+    }
+}
 

@@ -4,6 +4,7 @@ import RegisterPage from './pages/RegisterPage'
 import HomePage from './pages/HomePage'
 import PublicLayout from './layout/PublicLayout'
 import AdminLayout from './admin/layout/AdminLayout'
+import ProtectedAdminRoute from './components/routing/ProtectedAdminRoute'
 import Dashboard from './admin/pages/Dashboard'
 import Movies from './admin/pages/Movies'
 import Directors from './admin/pages/Directors'
@@ -20,7 +21,7 @@ export default function App() {
         <Route path="/register" element={<RegisterPage />} />
       </Route>
 
-      <Route path="/admin" element={<AdminLayout />}>
+      <Route path="/admin" element={<ProtectedAdminRoute><AdminLayout /></ProtectedAdminRoute>}>
         <Route index element={<Dashboard />} />
         <Route path="movies" element={<Movies />} />
         <Route path="directors" element={<Directors />} />
