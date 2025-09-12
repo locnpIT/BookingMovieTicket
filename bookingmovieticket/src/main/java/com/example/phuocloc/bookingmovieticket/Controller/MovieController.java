@@ -15,6 +15,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.bind.annotation.DeleteMapping;
 
 import com.example.phuocloc.bookingmovieticket.dto.Movie.MovieDTO;
 import com.example.phuocloc.bookingmovieticket.enums.MovieStatus;
@@ -74,6 +77,42 @@ public class MovieController {
             @RequestParam(required = false) MovieStatus status) {
         Page<MovieDTO> result = movieService.getMoviesPaged(status, page, size);
         return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<MovieDTO> getMovieById(@PathVariable Long id) {
+        return ResponseEntity.ok(movieService.getMovieById(id));
+    }
+
+    @PostMapping("/{id}/image")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ApiResponse<MovieDTO>> uploadMovieImage(
+        @PathVariable Long id,
+        @RequestPart(value = "file", required = true) MultipartFile file
+    ){
+        MovieDTO current = movieService.uploadMovieImage(id, file);
+        ApiResponse<MovieDTO> response = new ApiResponse<>(
+            true,
+            "Đã nhận file. Ảnh đang được tải lên nền.",
+            current,
+            HttpStatus.ACCEPTED.value(),
+            LocalDateTime.now()
+        );
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ApiResponse<Void>> deleteMovie(@PathVariable Long id) {
+        movieService.deleteMovie(id);
+        ApiResponse<Void> response = new ApiResponse<>(
+            true,
+            "Xoá phim thành công!",
+            null,
+            HttpStatus.OK.value(),
+            LocalDateTime.now()
+        );
+        return ResponseEntity.ok(response);
     }
 
 }

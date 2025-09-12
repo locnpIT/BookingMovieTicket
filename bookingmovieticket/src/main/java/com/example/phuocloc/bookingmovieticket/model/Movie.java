@@ -46,6 +46,9 @@ public class Movie extends BaseEntity{
     @Column(length = 2000)
     private String imageUrl;
 
+    @Column(length = 255)
+    private String imagePublicId;
+
     @Column(length = 2000)
     private String trailerUrl;
 

@@ -1,14 +1,14 @@
 import { useEffect, useMemo, useState } from 'react'
 import Table, { type Column } from '../components/Table'
-import { directorApi } from '../../services/directorApi'
-import type { DirectorDTO } from '../../services/directorApi'
-import type { PageResult } from '../../services/api'
 import Button from '../../components/ui/Button'
 import { useAuth } from '../../context/AuthContext'
+import { authorApi } from '../../services/authorApi'
+import type { AuthorDTO } from '../../services/authorApi'
+import type { PageResult } from '../../services/api'
 import ConfirmDialog from '../../components/ui/ConfirmDialog'
 import { buildPageList } from '../../utils/pagination'
 
-function CreateDirectorModal({ open, onClose, onCreated }: { open: boolean; onClose: () => void; onCreated: (d: DirectorDTO) => void }) {
+function CreateAuthorModal({ open, onClose, onCreated }: { open: boolean; onClose: () => void; onCreated: (a: AuthorDTO) => void }) {
   const { token } = useAuth()
   const [name, setName] = useState('')
   const [birthDate, setBirthDate] = useState('')
@@ -34,7 +34,7 @@ function CreateDirectorModal({ open, onClose, onCreated }: { open: boolean; onCl
 
   async function handleCreate() {
     if (!token) { setError('Bạn cần đăng nhập ADMIN'); return }
-    if (!name.trim()) { setError('Tên đạo diễn là bắt buộc'); return }
+    if (!name.trim()) { setError('Tên tác giả là bắt buộc'); return }
     setError(null); setLoading(true)
     try {
       const fd = new FormData()
@@ -42,11 +42,11 @@ function CreateDirectorModal({ open, onClose, onCreated }: { open: boolean; onCl
       if (birthDate) fd.append('birthDate', birthDate)
       if (bio) fd.append('bio', bio)
       if (file) fd.append('file', file)
-      const res = await directorApi.create(fd, token)
+      const res = await authorApi.create(fd, token)
       onCreated(res.data)
       onClose()
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Tạo đạo diễn thất bại')
+      setError(e instanceof Error ? e.message : 'Tạo tác giả thất bại')
     } finally { setLoading(false) }
   }
 
@@ -55,14 +55,14 @@ function CreateDirectorModal({ open, onClose, onCreated }: { open: boolean; onCl
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4">
       <div className="w-full max-w-xl rounded-xl bg-white p-5 shadow-xl">
         <div className="mb-4 flex items-center justify-between">
-          <h3 className="text-lg font-semibold text-gray-900">Tạo đạo diễn</h3>
+          <h3 className="text-lg font-semibold text-gray-900">Tạo tác giả</h3>
           <button onClick={onClose} className="rounded-md p-1 text-gray-500 hover:bg-gray-100">✕</button>
         </div>
         {error && <div className="mb-3 rounded-md bg-red-50 px-3 py-2 text-sm text-red-700 ring-1 ring-red-200">{error}</div>}
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <div className="space-y-2">
             <label className="text-sm font-medium text-gray-700">Tên</label>
-            <input value={name} onChange={(e) => setName(e.target.value)} className="w-full rounded-lg border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500" placeholder="Ví dụ: Christopher Nolan" />
+            <input value={name} onChange={(e) => setName(e.target.value)} className="w-full rounded-lg border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500" placeholder="Ví dụ: J. K. Rowling" />
             <label className="text-sm font-medium text-gray-700">Ngày sinh</label>
             <input type="date" value={birthDate} onChange={(e) => setBirthDate(e.target.value)} className="w-full rounded-lg border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500" />
             <label className="text-sm font-medium text-gray-700">Tiểu sử</label>
@@ -88,7 +88,7 @@ function CreateDirectorModal({ open, onClose, onCreated }: { open: boolean; onCl
   )
 }
 
-function EditDirectorModal({ open, director, onClose, onUpdated }: { open: boolean; director?: DirectorDTO; onClose: () => void; onUpdated: (d: DirectorDTO) => void }) {
+function EditAuthorModal({ open, author, onClose, onUpdated }: { open: boolean; author?: AuthorDTO; onClose: () => void; onUpdated: (a: AuthorDTO) => void }) {
   const { token } = useAuth()
   const [name, setName] = useState('')
   const [birthDate, setBirthDate] = useState('')
@@ -99,16 +99,19 @@ function EditDirectorModal({ open, director, onClose, onUpdated }: { open: boole
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    if (open && director) {
-      setName(director.name || '')
-      setBirthDate(director.birthDate || '')
-      setBio(director.bio || '')
+    if (open && author) {
+      setName(author.name || '')
+      setBirthDate(author.birthDate || '')
+      setBio(author.bio || '')
       setFile(null)
       setPreview(null)
       setError(null)
       setLoading(false)
     }
-  }, [open, director])
+    if (!open) {
+      setName(''); setBirthDate(''); setBio(''); setFile(null); setPreview(null); setError(null); setLoading(false)
+    }
+  }, [open, author])
 
   useEffect(() => {
     if (file) {
@@ -119,45 +122,55 @@ function EditDirectorModal({ open, director, onClose, onUpdated }: { open: boole
   }, [file])
 
   async function save() {
-    if (!open || !director) return
-    if (!token) { setError('Bạn cần đăng nhập ADMIN'); return }
+    if (!token || !author) { setError('Bạn cần đăng nhập ADMIN'); return }
+    if (!name.trim()) { setError('Tên tác giả là bắt buộc'); return }
     setLoading(true)
     setError(null)
     try {
-      const payload: any = { name, bio }
-      if (birthDate) payload.birthDate = birthDate
-      const res = await directorApi.update(director.id, payload, token)
+      const res = await authorApi.update(author.id, { name, birthDate: birthDate || undefined, bio: bio || undefined }, token)
+      let latest: AuthorDTO | undefined
       if (file) {
-        try { await directorApi.uploadImage(director.id, file, token) } catch {}
+        try {
+          await authorApi.uploadImage(author.id, file, token)
+          // Poll for image to be available (backend uploads asynchronously)
+          const start = Date.now()
+          const timeoutMs = 10000
+          const intervalMs = 800
+          while (Date.now() - start < timeoutMs) {
+            const a = await authorApi.get(author.id)
+            if (a.imageUrl && a.imageUrl.length > 0) { latest = a; break }
+            await new Promise((r) => setTimeout(r, intervalMs))
+          }
+        } catch {}
       }
-      onUpdated(res.data)
+      onUpdated(latest ?? res.data)
       onClose()
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Cập nhật thất bại')
     } finally { setLoading(false) }
   }
 
-  if (!open || !director) return null
+  if (!open || !author) return null
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4">
       <div className="w-full max-w-xl rounded-xl bg-white p-5 shadow-xl">
         <div className="mb-4 flex items-center justify-between">
-          <h3 className="text-lg font-semibold text-gray-900">Sửa đạo diễn</h3>
+          <h3 className="text-lg font-semibold text-gray-900">Sửa tác giả</h3>
           <button onClick={onClose} className="rounded-md p-1 text-gray-500 hover:bg-gray-100">✕</button>
         </div>
         {error && <div className="mb-3 rounded-md bg-red-50 px-3 py-2 text-sm text-red-700 ring-1 ring-red-200">{error}</div>}
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <div className="space-y-2">
             <label className="text-sm font-medium text-gray-700">Tên</label>
-            <input value={name} onChange={(e) => setName(e.target.value)} className="w-full rounded-lg border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500" />
+            <input value={name} onChange={(e) => setName(e.target.value)} className="w-full rounded-lg border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500" />
             <label className="text-sm font-medium text-gray-700">Ngày sinh</label>
-            <input type="date" value={birthDate} onChange={(e) => setBirthDate(e.target.value)} className="w-full rounded-lg border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500" />
+            <input type="date" value={birthDate} onChange={(e) => setBirthDate(e.target.value)} className="w-full rounded-lg border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500" />
           </div>
           <div className="space-y-2">
             <label className="text-sm font-medium text-gray-700">Tiểu sử</label>
-            <textarea value={bio} onChange={(e) => setBio(e.target.value)} rows={6} className="w-full rounded-lg border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500" />
+            <textarea value={bio} onChange={(e) => setBio(e.target.value)} rows={6} className="w-full rounded-lg border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500" />
             <label className="text-sm font-medium text-gray-700">Ảnh đại diện (tuỳ chọn)</label>
-            <input type="file" accept="image/*" onChange={(e) => setFile(e.target.files?.[0] || null)} className="block w-full text-sm text-gray-700 file:mr-4 file:rounded-lg file:border-0 file:bg-amber-50 file:px-4 file:py-2 file:text-amber-700 hover:file:bg-amber-100" />
+            <input type="file" accept="image/*" onChange={(e) => setFile(e.target.files?.[0] || null)} className="block w-full text-sm text-gray-700 file:mr-4 file:rounded-lg file:border-0 file:bg-emerald-50 file:px-4 file:py-2 file:text-emerald-700 hover:file:bg-emerald-100" />
             {preview && (
               <div className="overflow-hidden rounded-lg border">
                 <img src={preview} alt="preview" className="h-40 w-full object-cover" />
@@ -167,21 +180,22 @@ function EditDirectorModal({ open, director, onClose, onUpdated }: { open: boole
         </div>
         <div className="mt-4 flex justify-end gap-2">
           <button onClick={onClose} className="rounded-lg px-4 py-2 text-gray-700 hover:bg-gray-100">Hủy</button>
-          <button onClick={save} className="rounded-lg bg-amber-500 px-4 py-2 text-white hover:bg-amber-600 disabled:opacity-50" disabled={loading}>{loading ? 'Đang lưu...' : 'Lưu'}</button>
+          <button onClick={save} className="rounded-lg bg-emerald-600 px-4 py-2 text-white hover:bg-emerald-700 disabled:opacity-50" disabled={loading}>{loading ? 'Đang lưu...' : 'Lưu'}</button>
         </div>
       </div>
     </div>
   )
 }
 
+// use shared ConfirmDialog
 
-export default function Directors() {
+export default function Authors() {
   const { token } = useAuth()
-  const [rows, setRows] = useState<DirectorDTO[]>([])
+  const [rows, setRows] = useState<AuthorDTO[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [modalOpen, setModalOpen] = useState(false)
-  const [edit, setEdit] = useState<{ open: boolean; item?: DirectorDTO }>({ open: false })
+  const [edit, setEdit] = useState<{ open: boolean; item?: AuthorDTO }>({ open: false })
   const [confirm, setConfirm] = useState<{ open: boolean; id?: number }>({ open: false })
   const [page, setPage] = useState(0)
   const pageSize = 10
@@ -193,7 +207,7 @@ export default function Directors() {
     setLoading(true)
     setError(null)
     try {
-      const data: PageResult<DirectorDTO> = await directorApi.listPaged(page, pageSize)
+      const data: PageResult<AuthorDTO> = await authorApi.listPaged(page, pageSize)
       setRows(data.content)
       setPageMeta({ totalElements: data.totalElements, totalPages: data.totalPages })
     } catch (e) {
@@ -203,10 +217,10 @@ export default function Directors() {
 
   useEffect(() => { load() }, [page])
 
-  const columns: Column<DirectorDTO>[] = useMemo(() => [
+  const columns: Column<AuthorDTO>[] = useMemo(() => [
     { key: 'id', header: 'ID' },
     {
-      key: 'name', header: 'Đạo diễn', render: (r) => (
+      key: 'name', header: 'Tác giả', render: (r) => (
         <div className="flex items-center gap-3">
           <div className="h-10 w-10 overflow-hidden rounded-full ring-1 ring-gray-200">
             {r.imageUrl ? <img src={r.imageUrl} className="h-full w-full object-cover" /> : <div className="flex h-full w-full items-center justify-center bg-gray-100 text-gray-400">No</div>}
@@ -221,7 +235,7 @@ export default function Directors() {
     { key: 'bio', header: 'Tiểu sử', render: (r) => <span className="line-clamp-2 text-gray-700">{r.bio || '-'}</span> },
     { key: 'imagePublicId', header: 'Hành động', render: (r) => (
       <div className="flex gap-2">
-        <button onClick={() => setEdit({ open: true, item: r })} className="inline-flex items-center rounded-md bg-amber-500/90 px-3 py-1.5 text-xs font-medium text-white ring-1 ring-amber-400/30 hover:bg-amber-600 shadow-sm">✏️ Sửa</button>
+        <button onClick={() => setEdit({ open: true, item: r })} className="inline-flex items-center rounded-md bg-emerald-600/90 px-3 py-1.5 text-xs font-medium text-white ring-1 ring-emerald-400/30 hover:bg-emerald-700 shadow-sm">✏️ Sửa</button>
         <button onClick={() => setConfirm({ open: true, id: r.id })} className="inline-flex items-center rounded-md bg-red-500/90 px-3 py-1.5 text-xs font-medium text-white ring-1 ring-red-400/30 hover:bg-red-600 shadow-sm">🗑️ Xoá</button>
       </div>
     ) },
@@ -230,8 +244,8 @@ export default function Directors() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold text-gray-900">Đạo diễn</h3>
-        <Button onClick={() => setModalOpen(true)}>Thêm đạo diễn</Button>
+        <h3 className="text-lg font-semibold text-gray-900">Tác giả</h3>
+        <Button onClick={() => setModalOpen(true)}>Thêm tác giả</Button>
       </div>
 
       {error && <div className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700 ring-1 ring-red-200">{error}</div>}
@@ -261,15 +275,15 @@ export default function Directors() {
         </>
       )}
 
-      <CreateDirectorModal open={modalOpen} onClose={() => setModalOpen(false)} onCreated={(_d) => { setPage(0); load() }} />
+      <CreateAuthorModal open={modalOpen} onClose={() => setModalOpen(false)} onCreated={(_a) => { setPage(0); load() }} />
 
-      <EditDirectorModal open={edit.open} director={edit.item} onClose={() => setEdit({ open: false })} onUpdated={(_d) => load()} />
+      <EditAuthorModal open={edit.open} author={edit.item} onClose={() => setEdit({ open: false })} onUpdated={(_a) => load()} />
 
-      <ConfirmDialog open={confirm.open} title="Xoá đạo diễn" message="Bạn có chắc chắn muốn xoá đạo diễn này? Hành động không thể hoàn tác." onClose={() => setConfirm({ open: false })} onConfirm={async () => {
+      <ConfirmDialog open={confirm.open} title="Xoá tác giả" message="Bạn có chắc chắn muốn xoá tác giả này? Hành động không thể hoàn tác." onClose={() => setConfirm({ open: false })} onConfirm={async () => {
         if (!confirm.id) return
         if (!token) { setError('Bạn cần đăng nhập ADMIN'); return }
         try {
-          await directorApi.remove(confirm.id, token)
+          await authorApi.remove(confirm.id, token)
           const newCount = rows.length - 1
           if (newCount <= 0 && page > 0) setPage((p) => p - 1)
           else load()

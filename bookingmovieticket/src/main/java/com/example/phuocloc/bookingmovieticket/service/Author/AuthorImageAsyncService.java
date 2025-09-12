@@ -33,7 +33,7 @@ public class AuthorImageAsyncService {
                 
             if(author.getImagePublicId() != null && !author.getImagePublicId().isBlank()){
                 try {
-                    cloudinaryService.deleteImage(uploadedPublicId);
+                    cloudinaryService.deleteImage(author.getImagePublicId());
                 } catch (IOException delException) {
                     log.warn("Failed to delete old image for author {}: {}", authorId, delException.getMessage());
                 }

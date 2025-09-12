@@ -8,6 +8,7 @@ import ProtectedAdminRoute from './components/routing/ProtectedAdminRoute'
 import Dashboard from './admin/pages/Dashboard'
 import Movies from './admin/pages/Movies'
 import Directors from './admin/pages/Directors'
+import Authors from './admin/pages/Authors'
 import Users from './admin/pages/Users'
 import Theaters from './admin/pages/Theaters'
 import Settings from './admin/pages/Settings'
@@ -25,6 +26,7 @@ export default function App() {
         <Route index element={<Dashboard />} />
         <Route path="movies" element={<Movies />} />
         <Route path="directors" element={<Directors />} />
+        <Route path="authors" element={<Authors />} />
         <Route path="users" element={<Users />} />
         <Route path="theaters" element={<Theaters />} />
         <Route path="settings" element={<Settings />} />

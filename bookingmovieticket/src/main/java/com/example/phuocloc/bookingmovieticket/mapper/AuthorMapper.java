@@ -15,6 +15,10 @@ public interface AuthorMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target= "movies", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "imagePublicId", ignore = true)
+    @Mapping(target = "imageUrl", ignore = true)
     Author toEntity(AuthorCreateDTO dto);
 
     AuthorDTO toDTO(Author author);

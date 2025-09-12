@@ -82,22 +82,22 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
     private boolean hasAuthorizationBearer(HttpServletRequest request){
         String header = request.getHeader("Authorization");
-
-        if(ObjectUtils.isEmpty(header) || !header.startsWith("Bearer")){
-            return false;
-        }
-
-        return true;
-
+        if (ObjectUtils.isEmpty(header)) return false;
+        String h = header.trim();
+        int space = h.indexOf(' ');
+        if (space < 0) return false;
+        String scheme = h.substring(0, space).trim();
+        return "bearer".equalsIgnoreCase(scheme);
     }
 
     private String getBearerToken(HttpServletRequest request){
         String header = request.getHeader("Authorization");
-
-        String array[] = header.split(" ");
-        if(array.length == 2) return array[1];
-
-        return null;
+        if (ObjectUtils.isEmpty(header)) return null;
+        String h = header.trim();
+        int space = h.indexOf(' ');
+        if (space < 0) return null;
+        String token = h.substring(space + 1).trim();
+        return token.isEmpty() ? null : token;
     }
 
     private UserDetails getUserDetails(Claims claims){

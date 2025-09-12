@@ -9,6 +9,8 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 
+import com.example.phuocloc.bookingmovieticket.enums.MovieStatus;
+
 import com.example.phuocloc.bookingmovieticket.dto.Movie.MovieDTO;
 import com.example.phuocloc.bookingmovieticket.model.Genre;
 import com.example.phuocloc.bookingmovieticket.model.Movie;
@@ -22,8 +24,12 @@ public interface MovieMapper {
     @Mapping(target = "directors", ignore = true)
     @Mapping(target = "authors", ignore = true)
     @Mapping(target = "showtimes", ignore = true)
-    @Mapping(target = "avgRating", constant = "0.0") 
-    @Mapping(target = "status", constant = "UPCOMING")
+    @Mapping(target = "banners", ignore = true)
+    @Mapping(target = "avgRating", expression = "java(0.0)")
+    @Mapping(target = "status", expression = "java(com.example.phuocloc.bookingmovieticket.enums.MovieStatus.UPCOMING)")
+    @Mapping(target = "imagePublicId", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
     Movie toMovie(MovieCreateDTO dto);
 
     List<MovieDTO> toMovieDTOList(List<Movie> movies);

@@ -14,6 +14,10 @@ public interface DirectorMapper {
     
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "movies", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "imagePublicId", ignore = true)
+    @Mapping(target = "imageUrl", ignore = true)
     Director toEntity(DirectorCreateDTO dto);
     
     DirectorDTO toDTO(Director director);

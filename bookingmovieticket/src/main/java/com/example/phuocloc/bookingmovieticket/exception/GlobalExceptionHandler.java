@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 import com.example.phuocloc.bookingmovieticket.response.ApiResponse;
 
@@ -44,6 +45,12 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
     }
 
+    @ExceptionHandler(OperationNotAllowedException.class)
+    public ResponseEntity<ApiResponse<Void>> handleOperationNotAllowed(OperationNotAllowedException ex) {
+        ApiResponse<Void> body = new ApiResponse<>(false, ex.getMessage(), null, HttpStatus.CONFLICT.value(), LocalDateTime.now());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(body);
+    }
+
     // constraint trong modal, neu validation trong modal that bai thi nem ra exception nay
    @ExceptionHandler(jakarta.validation.ConstraintViolationException.class)
     public ResponseEntity<ApiResponse<String>> handleConstraintViolation(
@@ -58,5 +65,11 @@ public class GlobalExceptionHandler {
                 HttpStatus.BAD_REQUEST.value(), LocalDateTime.now());
         return ResponseEntity.badRequest().body(body);
     }
-}
 
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity<ApiResponse<Void>> handleMaxUpload(MaxUploadSizeExceededException ex) {
+        ApiResponse<Void> body = new ApiResponse<>(false, "Maximum upload size exceeded", null,
+                HttpStatus.PAYLOAD_TOO_LARGE.value(), LocalDateTime.now());
+        return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE).body(body);
+    }
+}

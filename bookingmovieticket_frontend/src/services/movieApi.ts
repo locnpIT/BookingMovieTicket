@@ -1,5 +1,5 @@
 import { apiFetch } from './api'
-import type { ApiResponse } from './api'
+import type { ApiResponse, PageResult } from './api'
 
 export type MovieDTO = {
   id: number
@@ -13,16 +13,6 @@ export type MovieDTO = {
   ageRating: string
   status: 'UPCOMING' | 'NOW_SHOWING' | 'ENDED'
   genreNames?: string[]
-}
-
-export type PageResult<T> = {
-  content: T[]
-  totalElements: number
-  totalPages: number
-  number: number
-  size: number
-  first: boolean
-  last: boolean
 }
 
 export type MovieCreate = {
@@ -47,6 +37,9 @@ export type MovieUpdate = Partial<Omit<MovieCreate, 'genreIds' | 'directorIds' |
 }
 
 export const movieApi = {
+  async get(id: number): Promise<MovieDTO> {
+    return await apiFetch<MovieDTO>(`/api/movies/${id}`)
+  },
   async list(status?: MovieDTO['status']): Promise<MovieDTO[]> {
     const qs = status ? `?status=${status}` : ''
     return await apiFetch<MovieDTO[]>(`/api/movies${qs}`)
@@ -59,35 +52,32 @@ export const movieApi = {
     return await apiFetch<PageResult<MovieDTO>>(`/api/movies/paged?${sp.toString()}`)
   },
   async create(payload: MovieCreate, token: string): Promise<ApiResponse<MovieDTO>> {
-    const res = await fetch('/api/movies', {
+    return await apiFetch<ApiResponse<MovieDTO>>('/api/movies', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      headers: { Authorization: `Bearer ${token}` },
       body: JSON.stringify(payload),
     })
-    if (!res.ok) {
-      let msg = `HTTP ${res.status}`
-      try {
-        const body = (await res.json()) as Partial<ApiResponse<unknown>>
-        if (body?.message) msg = body.message
-      } catch {}
-      throw new Error(msg)
-    }
-    return (await res.json()) as ApiResponse<MovieDTO>
   },
   async update(id: number, payload: MovieUpdate, token: string): Promise<ApiResponse<MovieDTO>> {
-    const res = await fetch(`/api/movies/${id}`, {
+    return await apiFetch<ApiResponse<MovieDTO>>(`/api/movies/${id}`, {
       method: 'PATCH',
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      headers: { Authorization: `Bearer ${token}` },
       body: JSON.stringify(payload),
     })
-    if (!res.ok) {
-      let msg = `HTTP ${res.status}`
-      try {
-        const body = (await res.json()) as Partial<ApiResponse<unknown>>
-        if (body?.message) msg = body.message
-      } catch {}
-      throw new Error(msg)
-    }
-    return (await res.json()) as ApiResponse<MovieDTO>
+  },
+  async remove(id: number, token: string): Promise<ApiResponse<void>> {
+    return await apiFetch<ApiResponse<void>>(`/api/movies/${id}`, {
+      method: 'DELETE',
+      headers: { Authorization: `Bearer ${token}` },
+    })
+  },
+  async uploadImage(id: number, file: File, token: string): Promise<ApiResponse<MovieDTO>> {
+    const fd = new FormData()
+    fd.append('file', file)
+    return await apiFetch<ApiResponse<MovieDTO>>(`/api/movies/${id}/image`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}` },
+      body: fd,
+    })
   },
 }
