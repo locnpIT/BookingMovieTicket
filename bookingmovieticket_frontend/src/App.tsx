@@ -12,6 +12,10 @@ import Authors from './admin/pages/Authors'
 import Users from './admin/pages/Users'
 import Theaters from './admin/pages/Theaters'
 import Settings from './admin/pages/Settings'
+import Showtimes from './admin/pages/Showtimes'
+import Provinces from './admin/pages/Provinces'
+import Rooms from './admin/pages/Rooms'
+import SeatSelectionPage from './pages/SeatSelectionPage'
 
 export default function App() {
   return (
@@ -20,12 +24,16 @@ export default function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
+        <Route path="/book/:showtimeId" element={<SeatSelectionPage />} />
       </Route>
 
       <Route path="/admin" element={<ProtectedAdminRoute><AdminLayout /></ProtectedAdminRoute>}>
         <Route index element={<Dashboard />} />
         <Route path="movies" element={<Movies />} />
         <Route path="directors" element={<Directors />} />
+        <Route path="provinces" element={<Provinces />} />
+        <Route path="showtimes" element={<Showtimes />} />
+        <Route path="rooms" element={<Rooms />} />
         <Route path="authors" element={<Authors />} />
         <Route path="users" element={<Users />} />
         <Route path="theaters" element={<Theaters />} />

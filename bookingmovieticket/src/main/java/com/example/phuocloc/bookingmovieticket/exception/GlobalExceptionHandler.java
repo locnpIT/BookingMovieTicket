@@ -1,8 +1,6 @@
 package com.example.phuocloc.bookingmovieticket.exception;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -17,18 +15,20 @@ import com.example.phuocloc.bookingmovieticket.response.ApiResponse;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+
+    // handle cac exception duplicate resource
     @ExceptionHandler(DuplicateResourceException.class)
     public ResponseEntity<ApiResponse<Void>> handleDuplicate(DuplicateResourceException ex) {
         ApiResponse<Void> body = new ApiResponse<>(false, ex.getMessage(), null, HttpStatus.CONFLICT.value(), LocalDateTime.now());
         return ResponseEntity.status(HttpStatus.CONFLICT).body(body);
     }
-
+    // handle cac exception duplicate resource
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ApiResponse<Void>> handleDataIntegrity(DataIntegrityViolationException ex) {
         ApiResponse<Void> body = new ApiResponse<>(false, "Resource already exists", null, HttpStatus.CONFLICT.value(), LocalDateTime.now());
         return ResponseEntity.status(HttpStatus.CONFLICT).body(body);
     }
-
+    // handle cac exception validation
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiResponse<String>> handleValidation(MethodArgumentNotValidException ex) {
         String msg = ex.getBindingResult().getFieldErrors().stream()
@@ -39,12 +39,14 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(body);
     }
 
+    // handle cac exception resource not found
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ApiResponse<Void>> handleNotFound(ResourceNotFoundException ex) {
         ApiResponse<Void> body = new ApiResponse<>(false, ex.getMessage(), null, HttpStatus.NOT_FOUND.value(), LocalDateTime.now());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
     }
 
+    // handle cac exception operation not allowed
     @ExceptionHandler(OperationNotAllowedException.class)
     public ResponseEntity<ApiResponse<Void>> handleOperationNotAllowed(OperationNotAllowedException ex) {
         ApiResponse<Void> body = new ApiResponse<>(false, ex.getMessage(), null, HttpStatus.CONFLICT.value(), LocalDateTime.now());
@@ -66,6 +68,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(body);
     }
 
+    // handle cac exception file upload qua lon
     @ExceptionHandler(MaxUploadSizeExceededException.class)
     public ResponseEntity<ApiResponse<Void>> handleMaxUpload(MaxUploadSizeExceededException ex) {
         ApiResponse<Void> body = new ApiResponse<>(false, "Maximum upload size exceeded", null,
