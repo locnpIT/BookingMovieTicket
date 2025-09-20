@@ -15,6 +15,86 @@ body {
 input, select, textarea { color: #374151; }
 ::placeholder { color: #9ca3af; opacity: 1; }
 
+/* Admin theme overrides */
+.admin-surface {
+  color: #f8fafc;
+}
+
+.admin-surface h1,
+.admin-surface h2,
+.admin-surface h3,
+.admin-surface h4,
+.admin-surface h5,
+.admin-surface h6,
+.admin-surface label,
+.admin-surface .text-gray-900,
+.admin-surface .text-gray-800,
+.admin-surface .text-gray-700,
+.admin-surface .text-gray-600,
+.admin-surface .text-gray-500,
+.admin-surface .text-gray-400,
+.admin-surface .text-gray-300,
+.admin-surface .text-gray-200,
+.admin-surface .text-gray-100 {
+  color: rgba(241, 245, 249, 0.95) !important;
+}
+
+.admin-surface .text-gray-500 { color: rgba(203, 213, 225, 0.85) !important; }
+.admin-surface .text-gray-400 { color: rgba(148, 163, 184, 0.8) !important; }
+.admin-surface .text-gray-300 { color: rgba(148, 163, 184, 0.7) !important; }
+.admin-surface .text-gray-200 { color: rgba(226, 232, 240, 0.85) !important; }
+.admin-surface .text-gray-100 { color: rgba(226, 232, 240, 0.75) !important; }
+
+.admin-surface .bg-white,
+.admin-surface .bg-gray-50 {
+  background-color: rgba(15, 23, 42, 0.88) !important;
+  border-color: rgba(148, 163, 184, 0.25) !important;
+  color: #f8fafc !important;
+}
+.admin-surface .bg-gray-100 { background-color: rgba(148, 163, 184, 0.12) !important; }
+.admin-surface .bg-gray-200 { background-color: rgba(148, 163, 184, 0.18) !important; }
+
+.admin-surface .ring-gray-100,
+.admin-surface .ring-gray-200,
+.admin-surface .ring-gray-300 {
+  --tw-ring-color: rgba(148, 163, 184, 0.25) !important;
+}
+
+.admin-surface .border,
+.admin-surface .border-gray-200,
+.admin-surface .border-gray-300 {
+  border-color: rgba(148, 163, 184, 0.25) !important;
+}
+
+.admin-surface input,
+.admin-surface select,
+.admin-surface textarea {
+  background-color: rgba(15, 23, 42, 0.65) !important;
+  border-color: rgba(148, 163, 184, 0.35) !important;
+  color: #f8fafc !important;
+}
+
+.admin-surface input::placeholder,
+.admin-surface textarea::placeholder {
+  color: rgba(226, 232, 240, 0.65) !important;
+}
+
+.admin-surface button {
+  color: inherit;
+}
+
+.admin-surface .bg-red-50 { background-color: rgba(248, 113, 113, 0.15) !important; }
+.admin-surface .bg-amber-50 { background-color: rgba(251, 191, 36, 0.18) !important; }
+.admin-surface .bg-emerald-50 { background-color: rgba(16, 185, 129, 0.18) !important; }
+.admin-surface .text-red-700 { color: #fecaca !important; }
+
+.admin-surface .shadow,
+.admin-surface .shadow-sm,
+.admin-surface .shadow-lg,
+.admin-surface .shadow-xl {
+  box-shadow: 0 20px 45px -25px rgba(15, 23, 42, 0.85) !important;
+}
+
 /* Hide scrollbars for horizontal carousels */
 .scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
 .scrollbar-none::-webkit-scrollbar { display: none; }

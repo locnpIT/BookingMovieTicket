@@ -36,9 +36,6 @@ public class Ticket extends BaseEntity{
     @Column(precision=19, scale=2, nullable = false)
     private BigDecimal price;
 
-    @Column(length = 1000)
-    private String qrCode;
-
     @Enumerated(EnumType.STRING)
     private TicketStatus status = TicketStatus.VALID;
 

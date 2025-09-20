@@ -36,9 +36,10 @@ public class ShowtimeController {
     public ResponseEntity<List<ShowtimeDTO>> list(
         @RequestParam(required = false) Long movieId,
         @RequestParam(required = false) Long roomId,
-        @RequestParam(required = false) LocalDate date
+        @RequestParam(required = false) LocalDate date,
+        @RequestParam(required = false) String q
     ){
-        List<ShowtimeDTO> items = showtimeService.listByFilters(movieId, roomId, date);
+        List<ShowtimeDTO> items = showtimeService.listByFilters(movieId, roomId, date, q);
         return ResponseEntity.ok(items);
     }
 

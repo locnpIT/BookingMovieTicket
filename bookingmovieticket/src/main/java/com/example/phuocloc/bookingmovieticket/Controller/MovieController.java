@@ -65,8 +65,10 @@ public class MovieController {
     }
 
     @GetMapping
-    public ResponseEntity<List<MovieDTO>> getAllMovies(@RequestParam(required = false) MovieStatus status) {
-        List<MovieDTO> movies = movieService.getAllMovies(status);
+    public ResponseEntity<List<MovieDTO>> getAllMovies(
+            @RequestParam(required = false) MovieStatus status,
+            @RequestParam(required = false) String q) {
+        List<MovieDTO> movies = movieService.getAllMovies(status, q);
         return ResponseEntity.ok(movies);
     }
 
@@ -74,8 +76,9 @@ public class MovieController {
     public ResponseEntity<Page<MovieDTO>> getMoviesPaged(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
-            @RequestParam(required = false) MovieStatus status) {
-        Page<MovieDTO> result = movieService.getMoviesPaged(status, page, size);
+            @RequestParam(required = false) MovieStatus status,
+            @RequestParam(required = false) String q) {
+        Page<MovieDTO> result = movieService.getMoviesPaged(status, page, size, q);
         return ResponseEntity.ok(result);
     }
 

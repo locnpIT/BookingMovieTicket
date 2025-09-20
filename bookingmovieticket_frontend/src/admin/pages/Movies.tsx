@@ -10,6 +10,7 @@ import { directorApi } from '../../services/directorApi'
 import type { DirectorDTO } from '../../services/directorApi'
 import ConfirmDialog from '../../components/ui/ConfirmDialog'
 import { buildPageList } from '../../utils/pagination'
+import { formatDateDisplay } from '../../utils/date'
 
 function CreateMovieModal({ open, onClose, onCreated }: { open: boolean; onClose: () => void; onCreated: (m: MovieDTO) => void }) {
   const { token } = useAuth() // reserved for future edit/delete actions
@@ -395,7 +396,7 @@ export default function Movies() {
         </div>
         <div className="leading-tight">
           <div className="font-medium text-gray-900">{r.title}</div>
-          <div className="text-xs text-gray-500">{r.releaseDate} • {r.duration} phút</div>
+          <div className="text-xs text-gray-500">{formatDateDisplay(r.releaseDate)} • {r.duration} phút</div>
         </div>
       </div>
     )},

@@ -85,12 +85,23 @@ public class SeatSelectionService {
             if (ss.getStatus() == ShowSeatStatus.SOLD || ss.getStatus() == ShowSeatStatus.BLOCKED) {
                 throw new OperationNotAllowedException("Seat already sold or blocked");
             }
+            SeatHold hold = seatHoldRepository.findByShowSeat_IdAndUser_Id(ss.getId(), user.getId()).orElse(null);
+            if (ss.getStatus() == ShowSeatStatus.HOLD) {
+                if (hold == null) {
+                    // Seat is being held by someone else
+                    throw new OperationNotAllowedException("Seat currently held by another user");
+                }
+            }
+
             ss.setStatus(ShowSeatStatus.HOLD);
             showSeatRepository.save(ss);
-            SeatHold hold = new SeatHold();
-            hold.setShowSeat(ss);
-            hold.setUser(user);
-            hold.setCreatedAtUtc(now);
+
+            if (hold == null) {
+                hold = new SeatHold();
+                hold.setShowSeat(ss);
+                hold.setUser(user);
+                hold.setCreatedAtUtc(now);
+            }
             hold.setExpiresAtUtc(expires);
             seatHoldRepository.save(hold);
             affected.add(ss);
@@ -121,4 +132,3 @@ public class SeatSelectionService {
         if (!expired.isEmpty()) seatHoldRepository.deleteAll(expired);
     }
 }
-

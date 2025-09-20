@@ -37,11 +37,12 @@ export type ShowtimeUpdate = Partial<{
 }>
 
 export const showtimeApi = {
-  async list(date?: string, movieId?: number, roomId?: number): Promise<ShowtimeDTO[]> {
+  async list(date?: string, movieId?: number, roomId?: number, q?: string): Promise<ShowtimeDTO[]> {
     const sp = new URLSearchParams()
     if (date) sp.set('date', date)
     if (movieId) sp.set('movieId', String(movieId))
     if (roomId) sp.set('roomId', String(roomId))
+    if (q && q.trim()) sp.set('q', q)
     return await apiFetch<ShowtimeDTO[]>(`/api/showtimes?${sp.toString()}`)
   },
   async create(payload: ShowtimeCreate, token?: string): Promise<ApiResponse<ShowtimeDTO>> {

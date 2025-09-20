@@ -132,23 +132,30 @@ public class MovieService {
         } catch (Exception ignore) {}
         movieRepository.delete(movie);
     }
-    @Cacheable(value = "moviesCache", key = "#status ?: 'all'")
-    public List<MovieDTO> getAllMovies(MovieStatus status) {
-        Specification<Movie> spec = Specification.where(null);
 
+    
+    @Cacheable(value = "moviesCache", key = "(#status != null ? #status.name() : 'ALL') + '|' + (#q != null ? #q.trim().toLowerCase() : '')")
+    public List<MovieDTO> getAllMovies(MovieStatus status, String q) {
+        Specification<Movie> spec = Specification.where((root, query, cb) -> cb.conjunction());
         if (status != null) {
             spec = spec.and((root, query, cb) -> cb.equal(root.get("status"), status));
         }
-
+        if (q != null && !q.isBlank()) {
+            final String like = "%" + q.trim().toLowerCase() + "%";
+            spec = spec.and((root, query, cb) -> cb.like(cb.lower(root.get("title")), like));
+        }
         List<Movie> movies = movieRepository.findAll(spec, Sort.by("releaseDate").descending());
-
         return movieMapper.toMovieDTOList(movies);
     }
 
-    public Page<MovieDTO> getMoviesPaged(MovieStatus status, int page, int size) {
-        Specification<Movie> spec = Specification.where(null);
+    public Page<MovieDTO> getMoviesPaged(MovieStatus status, int page, int size, String q) {
+        Specification<Movie> spec = Specification.where((root, query, cb) -> cb.conjunction());
         if (status != null) {
             spec = spec.and((root, query, cb) -> cb.equal(root.get("status"), status));
+        }
+        if (q != null && !q.isBlank()) {
+            final String like = "%" + q.trim().toLowerCase() + "%";
+            spec = spec.and((root, query, cb) -> cb.like(cb.lower(root.get("title")), like));
         }
         Page<Movie> p = movieRepository.findAll(spec, PageRequest.of(page, size, Sort.by("releaseDate").descending()));
         return p.map(movieMapper::toMovieDTO);

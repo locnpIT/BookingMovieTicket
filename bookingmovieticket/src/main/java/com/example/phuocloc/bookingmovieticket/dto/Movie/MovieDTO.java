@@ -20,5 +20,7 @@ public class MovieDTO {
     private String ageRating;
     private MovieStatus status;
     private Set<String> genreNames;
+    private Set<String> directorNames;
+    private Set<String> authorNames;
 
 }

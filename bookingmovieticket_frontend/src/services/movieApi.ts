@@ -40,15 +40,19 @@ export const movieApi = {
   async get(id: number): Promise<MovieDTO> {
     return await apiFetch<MovieDTO>(`/api/movies/${id}`)
   },
-  async list(status?: MovieDTO['status']): Promise<MovieDTO[]> {
-    const qs = status ? `?status=${status}` : ''
-    return await apiFetch<MovieDTO[]>(`/api/movies${qs}`)
+  async list(status?: MovieDTO['status'], q?: string): Promise<MovieDTO[]> {
+    const sp = new URLSearchParams()
+    if (status) sp.set('status', status)
+    if (q && q.trim()) sp.set('q', q)
+    const qs = sp.toString()
+    return await apiFetch<MovieDTO[]>(`/api/movies${qs ? `?${qs}` : ''}`)
   },
-  async listPaged(page = 0, size = 10, status?: MovieDTO['status']): Promise<PageResult<MovieDTO>> {
+  async listPaged(page = 0, size = 10, status?: MovieDTO['status'], q?: string): Promise<PageResult<MovieDTO>> {
     const sp = new URLSearchParams()
     sp.set('page', String(page))
     sp.set('size', String(size))
     if (status) sp.set('status', status)
+    if (q && q.trim()) sp.set('q', q)
     return await apiFetch<PageResult<MovieDTO>>(`/api/movies/paged?${sp.toString()}`)
   },
   async create(payload: MovieCreate, token: string): Promise<ApiResponse<MovieDTO>> {

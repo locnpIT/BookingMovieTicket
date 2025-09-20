@@ -62,6 +62,7 @@ public class SecurityConfig {
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
         http.authorizeHttpRequests(auth -> 
         auth.requestMatchers("/api/oauth/**").permitAll()
+        .requestMatchers("/api/payment/vnpay/**").permitAll()
         .requestMatchers(HttpMethod.GET, "/api/movies/**", "/api/directors/**", "/api/authors/**").permitAll()
         .anyRequest().authenticated())
         .csrf(csrf -> csrf.disable())

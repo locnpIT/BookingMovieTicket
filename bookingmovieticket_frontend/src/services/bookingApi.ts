@@ -15,6 +15,14 @@ export type BookingDTO = {
 }
 
 export const bookingApi = {
+  async checkout(showSeatIds: number[], token: string): Promise<string> {
+    const res = await apiFetch<ApiResponse<string>>('/api/bookings/checkout', {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ showSeatIds }),
+    })
+    return res.data // paymentUrl
+  },
   async confirm(showSeatIds: number[], token: string): Promise<ApiResponse<BookingDTO>> {
     return await apiFetch<ApiResponse<BookingDTO>>('/api/bookings/confirm', {
       method: 'POST',
@@ -22,5 +30,10 @@ export const bookingApi = {
       body: JSON.stringify({ showSeatIds }),
     })
   },
+  async history(token: string): Promise<ApiResponse<BookingDTO[]>> {
+    return await apiFetch<ApiResponse<BookingDTO[]>>('/api/bookings/me', {
+      method: 'GET',
+      headers: { Authorization: `Bearer ${token}` },
+    })
+  },
 }
-

@@ -22,4 +22,3 @@ public class BookingDTO {
         private BigDecimal price;
     }
 }
-

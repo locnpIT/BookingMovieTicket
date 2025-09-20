@@ -172,6 +172,7 @@ export default function Showtimes() {
   const [date, setDate] = useState<string | ''>(() => new Date().toISOString().slice(0,10))
   const [allDates, setAllDates] = useState(false)
   const [movieFilter, setMovieFilter] = useState<number | ''>('')
+  const [q, setQ] = useState('')
   const [rows, setRows] = useState<ShowtimeDTO[]>([])
   const [movies, setMovies] = useState<MovieDTO[]>([])
   const [loading, setLoading] = useState(true)
@@ -185,13 +186,13 @@ export default function Showtimes() {
   async function load() {
     setLoading(true); setError(null)
     try {
-      const data = await showtimeApi.list(allDates ? undefined : date || undefined, movieFilter ? Number(movieFilter) : undefined)
+      const data = await showtimeApi.list(allDates ? undefined : date || undefined, movieFilter ? Number(movieFilter) : undefined, undefined, q || undefined)
       setRows(data)
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Không tải được danh sách')
     } finally { setLoading(false) }
   }
-  useEffect(() => { load() }, [date, movieFilter, allDates])
+  useEffect(() => { load() }, [date, movieFilter, allDates, q])
 
   const columns: Column<ShowtimeDTO>[] = useMemo(() => [
     { key: 'id', header: 'ID' },
@@ -225,6 +226,7 @@ export default function Showtimes() {
               Tất cả ngày
             </label>
           </div>
+          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Tìm phim/phòng..." className="rounded-lg border px-3 py-2 text-sm" />
           <Button onClick={() => setCreateOpen(true)}>Thêm suất chiếu</Button>
         </div>
       </div>
