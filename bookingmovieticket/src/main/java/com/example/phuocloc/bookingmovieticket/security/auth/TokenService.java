@@ -1,30 +1,37 @@
 package com.example.phuocloc.bookingmovieticket.security.auth;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import java.time.Duration;
+
 import org.springframework.stereotype.Service;
 
+import com.example.phuocloc.bookingmovieticket.model.RefreshToken;
 import com.example.phuocloc.bookingmovieticket.model.User;
 import com.example.phuocloc.bookingmovieticket.security.jwt.JwtUtility;
+import com.example.phuocloc.bookingmovieticket.service.auth.RefreshTokenService;
+
+import lombok.RequiredArgsConstructor;
 
 @Service
+@RequiredArgsConstructor
 public class TokenService {
-    
-    @Value("${app.security.jwt.refresh-token.expiration}")
-    private int refreshTokenExpiration;
 
-    @Autowired JwtUtility jwtUtility;
+    private final JwtUtility jwtUtility;
+    private final RefreshTokenService refreshTokenService;
 
-    @Autowired PasswordEncoder passwordEncoder;
-
-    public AuthResponse generatetoken(User user) {
+    public AuthTokens generateTokenPair(User user) {
         String accessToken = jwtUtility.generateAccessToken(user);
-        AuthResponse response = new AuthResponse();
-
-        response.setAccessToken(accessToken);
-    
-        return response;
+        RefreshToken refreshToken = refreshTokenService.create(user);
+        return new AuthTokens(accessToken, refreshToken.getToken());
     }
 
+    public AuthTokens refreshTokens(String refreshTokenValue) {
+        RefreshToken current = refreshTokenService.verify(refreshTokenValue);
+        RefreshToken rotated = refreshTokenService.rotate(current);
+        String newAccess = jwtUtility.generateAccessToken(rotated.getUser());
+        return new AuthTokens(newAccess, rotated.getToken());
+    }
+
+    public Duration getRefreshTokenTtl() {
+        return refreshTokenService.getRefreshTokenTtl();
+    }
 }

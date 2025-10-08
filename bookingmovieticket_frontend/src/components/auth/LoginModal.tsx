@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import type { FormEvent } from 'react'
+import { useNavigate } from 'react-router-dom'
 import Modal from '../ui/Modal'
 import TextField from '../ui/TextField'
 import PasswordField from '../ui/PasswordField'
@@ -9,6 +10,7 @@ import { useAuth } from '../../context/AuthContext'
 
 export default function LoginModal({ open, onClose, onSwitchRegister }: { open: boolean; onClose: () => void; onSwitchRegister: () => void }) {
   const { login } = useAuth()
+  const navigate = useNavigate()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
@@ -28,6 +30,11 @@ export default function LoginModal({ open, onClose, onSwitchRegister }: { open: 
     }
   }
 
+  function handleForgotPassword() {
+    onClose()
+    navigate('/forgot-password')
+  }
+
   return (
     <Modal open={open} onClose={onClose} size="md">
       <div className="mb-3 flex items-start gap-3">
@@ -41,8 +48,11 @@ export default function LoginModal({ open, onClose, onSwitchRegister }: { open: 
         {error && <Alert kind="error">{error}</Alert>}
         <TextField label="Email" value={email} onChange={setEmail} type="email" required autoComplete="email" placeholder="you@example.com" />
         <PasswordField label="Mật khẩu" value={password} onChange={setPassword} required autoComplete="current-password" />
-        <div className="flex justify-between items-center">
-          <button type="button" onClick={onSwitchRegister} className="text-sm text-sky-700 hover:underline">Chưa có tài khoản? Đăng ký</button>
+        <div className="flex items-center justify-between text-sm">
+          <button type="button" onClick={onSwitchRegister} className="text-sky-700 hover:underline">Chưa có tài khoản? Đăng ký</button>
+          <button type="button" onClick={handleForgotPassword} className="text-sky-700 hover:underline">Quên mật khẩu?</button>
+        </div>
+        <div className="flex justify-end">
           <Button type="submit" loading={loading}>Đăng nhập</Button>
         </div>
       </form>

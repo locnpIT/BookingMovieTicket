@@ -56,6 +56,11 @@ export default function LoginPage() {
             required
             autoComplete="current-password"
           />
+          <div className="text-right text-sm">
+            <Link to="/forgot-password" className="text-sky-700 hover:underline">
+              Quên mật khẩu?
+            </Link>
+          </div>
           <Button type="submit" loading={loading} fullWidth>
             Đăng nhập
           </Button>

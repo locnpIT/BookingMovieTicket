@@ -2,10 +2,14 @@ package com.example.phuocloc.bookingmovieticket.service.User;
 
 import com.example.phuocloc.bookingmovieticket.dto.User.UserDTO;
 import com.example.phuocloc.bookingmovieticket.exception.DuplicateResourceException;
+import com.example.phuocloc.bookingmovieticket.exception.OperationNotAllowedException;
+import com.example.phuocloc.bookingmovieticket.exception.ResourceNotFoundException;
 import com.example.phuocloc.bookingmovieticket.mapper.UserMapper;
 import com.example.phuocloc.bookingmovieticket.model.User;
 import com.example.phuocloc.bookingmovieticket.repository.UserRepository;
 import com.example.phuocloc.bookingmovieticket.request.UserCreateDTO;
+import com.example.phuocloc.bookingmovieticket.request.User.ChangePasswordRequest;
+import com.example.phuocloc.bookingmovieticket.request.User.UserProfileUpdateRequest;
 import com.example.phuocloc.bookingmovieticket.service.Email.EmailService;
 
 import java.util.Optional;
@@ -72,6 +76,36 @@ public class UserService {
             }
         }
         return false;
+    }
+
+
+    @Transactional
+    public UserDTO updateProfile(Long userId, UserProfileUpdateRequest request) {
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy người dùng"));
+
+        user.setFirstName(request.getFirstName().trim());
+        user.setLastName(request.getLastName().trim());
+
+        User saved = userRepository.save(user);
+        return userMapper.toDTO(saved);
+    }
+
+    @Transactional
+    public void changePassword(Long userId, ChangePasswordRequest request) {
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy người dùng"));
+
+        if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword())) {
+            throw new OperationNotAllowedException("Mật khẩu hiện tại không chính xác");
+        }
+
+        if (!request.getNewPassword().equals(request.getConfirmPassword())) {
+            throw new OperationNotAllowedException("Mật khẩu xác nhận không khớp");
+        }
+
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        userRepository.save(user);
     }
 
 
