@@ -15,11 +15,11 @@ export type BookingDTO = {
 }
 
 export const bookingApi = {
-  async checkout(showSeatIds: number[], token: string): Promise<string> {
+  async checkout(showSeatIds: number[], token: string, pointsToUse: number = 0): Promise<string> {
     const res = await apiFetch<ApiResponse<string>>('/api/bookings/checkout', {
       method: 'POST',
       headers: { Authorization: `Bearer ${token}` },
-      body: JSON.stringify({ showSeatIds }),
+      body: JSON.stringify({ showSeatIds, pointsToUse }),
     })
     return res.data // paymentUrl
   },

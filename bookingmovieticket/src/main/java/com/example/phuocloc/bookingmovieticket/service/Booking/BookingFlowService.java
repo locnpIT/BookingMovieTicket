@@ -36,8 +36,8 @@ public class BookingFlowService {
     private final BookingRepository bookingRepository;
     private final TicketRepository ticketRepository;
 
-    @Transactional
-    public BookingDTO confirm(User user, List<Long> showSeatIds) {
+    @Transactional(timeout = 5)
+    public BookingDTO confirm(User user, List<Long> showSeatIds, BigDecimal discountAmount) {
         if (showSeatIds == null || showSeatIds.isEmpty()) throw new OperationNotAllowedException("No seats selected");
         // Deduplicate ids to avoid double processing and unique conflicts
         showSeatIds = new ArrayList<>(new LinkedHashSet<>(showSeatIds));
@@ -81,7 +81,7 @@ public class BookingFlowService {
             try {
                 showSeatRepository.save(ss);
             } catch (ObjectOptimisticLockingFailureException ex) {
-                throw new OperationNotAllowedException("Seat was taken by another user. Vui lòng chọn ghế khác", ex);
+                throw new OperationNotAllowedException("Seat was taken by another user. Please choose another seat!", ex);
             }
             Ticket t = new Ticket();
             t.setBooking(booking);
@@ -97,11 +97,22 @@ public class BookingFlowService {
             // Unique constraint on tickets(show_seat_id) violated -> seat already has a ticket
             throw new OperationNotAllowedException("Seat already sold", ex);
         }
-        booking.setTotalPrice(total);
+        BigDecimal finalPrice = total;
+        if (discountAmount != null && discountAmount.compareTo(BigDecimal.ZERO) > 0) {
+            finalPrice = total.subtract(discountAmount);
+            if (finalPrice.compareTo(BigDecimal.ZERO) < 0) {
+                finalPrice = BigDecimal.ZERO;
+            }
+        }
+        
+        booking.setTotalPrice(finalPrice);
         booking = bookingRepository.save(booking);
         seatHoldRepository.deleteAll(holds);
 
-        return toDto(booking, tickets);
+        BookingDTO dto = toDto(booking, tickets);
+        dto.setDiscountAmount(discountAmount != null ? discountAmount : BigDecimal.ZERO);
+        dto.setFinalPrice(finalPrice);
+        return dto;
     }
 
     private String generateCode() {

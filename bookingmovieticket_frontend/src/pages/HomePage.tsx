@@ -72,20 +72,36 @@ export default function HomePage() {
       <div className="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen">
         <HeroCarousel slides={heroSlides} />
       </div>
-      <div className="mx-auto max-w-6xl p-4 md:p-6 mt-6">
+      <div className="mx-auto max-w-7xl p-4 md:p-6 mt-8 animate-fadeIn">
         <HomeHeader location={location} onLocationChange={setLocation} search={search} onSearchChange={setSearch} />
-        <CategoryTabs value={tab} onChange={setTab} />
-        {error && <div className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700 ring-1 ring-red-200">{error}</div>}
+        <div className="mt-6">
+          <CategoryTabs value={tab} onChange={setTab} />
+        </div>
+        {error && (
+          <div className="mt-4 rounded-xl bg-gradient-to-r from-red-50 to-pink-50 border border-red-200 px-4 py-3 text-sm font-medium text-red-700 ring-1 ring-red-200/50 shadow-sm animate-slideIn">
+            <div className="flex items-center gap-2">
+              <span className="text-lg">⚠️</span>
+              <span>{error}</span>
+            </div>
+          </div>
+        )}
         {loading ? (
-          <div className="text-sm text-gray-600">Đang tải phim...</div>
+          <div className="flex items-center justify-center py-16">
+            <div className="text-center">
+              <div className="inline-block h-10 w-10 animate-spin rounded-full border-4 border-sky-200 border-t-sky-600 mb-4" />
+              <div className="text-sm font-medium text-gray-600">Đang tải phim...</div>
+            </div>
+          </div>
         ) : (
-          <>
+          <div className="mt-6">
             {tab === 'NOW_SHOWING' && <MovieGridSection title="Đang chiếu" movies={nowShowing} />} 
             {tab === 'COMING_SOON' && <MovieGridSection title="Sắp chiếu" movies={comingSoon} />} 
             {tab === 'IMAX' && <MovieGridSection title="IMAX" movies={imax} />} 
-          </>
+          </div>
         )}
-        <TestimonialsSection />
+        <div className="mt-16">
+          <TestimonialsSection />
+        </div>
       </div>
     </>
   )

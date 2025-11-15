@@ -11,6 +11,8 @@ public class BookingDTO {
     private Long id;
     private String bookingCode;
     private BigDecimal totalPrice;
+    private BigDecimal discountAmount = BigDecimal.ZERO;
+    private BigDecimal finalPrice;
     private OffsetDateTime bookingTime;
     private List<TicketDTO> tickets;
 

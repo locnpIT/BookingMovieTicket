@@ -34,6 +34,7 @@ import com.example.phuocloc.bookingmovieticket.response.ApiResponse;
 import com.example.phuocloc.bookingmovieticket.security.CustomUserDetails;
 import com.example.phuocloc.bookingmovieticket.service.Booking.BookingFlowService;
 import com.example.phuocloc.bookingmovieticket.service.Payment.VnPayService;
+import com.example.phuocloc.bookingmovieticket.service.Game.GameService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -49,6 +50,7 @@ public class PaymentController {
     private final ShowSeatRepository showSeatRepository;
     private final CheckoutSessionRepository checkoutRepo;
     private final BookingFlowService bookingFlowService;
+    private final GameService gameService;
 
     @Value("${app.frontend.base-url:http://localhost:5173}")
     private String frontendBaseUrl;
@@ -56,6 +58,7 @@ public class PaymentController {
     @Data
     public static class CheckoutRequest {
         private List<Long> showSeatIds;
+        private BigDecimal pointsToUse = BigDecimal.ZERO; // Points to use for discount
     }
 
     @PostMapping("/bookings/checkout")
@@ -80,20 +83,43 @@ public class PaymentController {
         // Calculate amount
         var seats = showSeatRepository.findByIdIn(req.getShowSeatIds());
         BigDecimal total = seats.stream().map(s -> s.getEffectivePrice()).reduce(BigDecimal.ZERO, BigDecimal::add);
+        
+        // Apply points discount if requested
+        BigDecimal discountAmount = BigDecimal.ZERO;
+        BigDecimal pointsToUse = req.getPointsToUse() != null ? req.getPointsToUse() : BigDecimal.ZERO;
+        if (pointsToUse.compareTo(BigDecimal.ZERO) > 0) {
+            BigDecimal userPoints = gameService.getUserPoints(user);
+            if (userPoints.compareTo(pointsToUse) < 0) {
+                return ResponseEntity.badRequest().body(new ApiResponse<>(false, "Không đủ điểm để sử dụng", null, HttpStatus.BAD_REQUEST.value(), java.time.LocalDateTime.now()));
+            }
+            discountAmount = gameService.pointsToVndDiscount(pointsToUse);
+            // Discount cannot exceed total amount
+            if (discountAmount.compareTo(total) > 0) {
+                discountAmount = total;
+                pointsToUse = gameService.vndDiscountToPoints(total);
+            }
+            // Deduct points (will be refunded if payment fails)
+            gameService.usePointsForDiscount(user, pointsToUse);
+        }
+        
+        BigDecimal finalAmount = total.subtract(discountAmount);
+        if (finalAmount.compareTo(BigDecimal.ZERO) < 0) {
+            finalAmount = BigDecimal.ZERO;
+        }
 
         // Create checkout session
         String orderCode = "BK" + System.currentTimeMillis();
         CheckoutSession cs = new CheckoutSession();
         cs.setOrderCode(orderCode);
         cs.setUser(user);
-        cs.setAmount(total);
+        cs.setAmount(finalAmount); // Store final amount after discount
         cs.setShowSeatIdsCsv(req.getShowSeatIds().stream().map(String::valueOf).collect(Collectors.joining(",")));
         cs.setCreatedAtUtc(now);
         cs.setExpiresAtUtc(now.plusMinutes(15));
         checkoutRepo.save(cs);
 
         String clientIp = getClientIp(http);
-        String payUrl = vnPayService.createPaymentUrl(orderCode, total.longValue(), clientIp);
+        String payUrl = vnPayService.createPaymentUrl(orderCode, finalAmount.longValue(), clientIp);
         ApiResponse<String> res = new ApiResponse<>(true, "Tạo liên kết thanh toán thành công", payUrl, HttpStatus.OK.value(), java.time.LocalDateTime.now());
         return ResponseEntity.ok(res);
     }
@@ -125,7 +151,12 @@ public class PaymentController {
             user = cs.getUser();
         }
 
-        BookingDTO dto = bookingFlowService.confirm(user, showSeatIds);
+        // Calculate discount from checkout session
+        var seats = showSeatRepository.findByIdIn(showSeatIds);
+        BigDecimal originalAmount = seats.stream().map(s -> s.getEffectivePrice()).reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal discountAmount = originalAmount.subtract(cs.getAmount());
+        
+        BookingDTO dto = bookingFlowService.confirm(user, showSeatIds, discountAmount);
         cs.setStatus(com.example.phuocloc.bookingmovieticket.enums.PaymentStatus.SUCCESS);
         checkoutRepo.save(cs);
         return redirectResult("success", null, dto.getBookingCode());

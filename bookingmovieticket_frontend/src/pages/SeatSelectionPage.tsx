@@ -5,6 +5,7 @@ import Button from '../components/ui/Button'
 import { showtimeApi } from '../services/showtimeApi'
 import type { ShowSeatDTO } from '../services/showtimeApi'
 import { bookingApi } from '../services/bookingApi'
+import { gameApi } from '../services/gameApi'
 
 type SeatCell = ShowSeatDTO & { row: string; col: number }
 
@@ -25,6 +26,9 @@ export default function SeatSelectionPage() {
   const [selected, setSelected] = useState<Record<number, boolean>>({}) // key: showSeatId
   const [holding, setHolding] = useState(false)
   const [confirming, setConfirming] = useState(false)
+  const [userPoints, setUserPoints] = useState<number>(0)
+  const [usePoints, setUsePoints] = useState(false)
+  const [pointsToUse, setPointsToUse] = useState<number>(0)
 
   async function load() {
     setLoading(true); setError(null)
@@ -36,6 +40,12 @@ export default function SeatSelectionPage() {
     } catch (e) { setError(e instanceof Error ? e.message : 'Không tải được ghế') } finally { setLoading(false) }
   }
   useEffect(() => { if (!Number.isNaN(stId)) load() }, [stId])
+  
+  useEffect(() => {
+    if (token) {
+      gameApi.getPoints(token).then(setUserPoints).catch(() => setUserPoints(0))
+    }
+  }, [token])
 
   const byRow = useMemo(() => {
     const map: Record<string, SeatCell[]> = {}
@@ -52,6 +62,25 @@ export default function SeatSelectionPage() {
   const totalPrice = useMemo(() => {
     return selectedSeats.reduce((sum, item) => sum + Number(item.effectivePrice || 0), 0)
   }, [selectedSeats])
+
+  const discountAmount = useMemo(() => {
+    if (!usePoints || pointsToUse <= 0) return 0
+    const discount = gameApi.pointsToVnd(pointsToUse)
+    return Math.min(discount, totalPrice) // Discount cannot exceed total
+  }, [usePoints, pointsToUse, totalPrice])
+
+  const finalPrice = useMemo(() => {
+    return Math.max(0, totalPrice - discountAmount)
+  }, [totalPrice, discountAmount])
+
+  useEffect(() => {
+    if (usePoints && userPoints > 0) {
+      const maxPointsToUse = Math.min(userPoints, gameApi.vndToPoints(totalPrice))
+      setPointsToUse(maxPointsToUse)
+    } else {
+      setPointsToUse(0)
+    }
+  }, [usePoints, userPoints, totalPrice])
 
   function currency(v: string | number) {
     const num = typeof v === 'string' ? Number(v) : v
@@ -81,36 +110,72 @@ export default function SeatSelectionPage() {
     if (showSeatIds.length === 0) { setError('Vui lòng chọn ít nhất 1 ghế'); return }
     setConfirming(true); setError(null)
     try {
-      const payUrl = await bookingApi.checkout(showSeatIds, token)
+      const points = usePoints ? pointsToUse : 0
+      const payUrl = await bookingApi.checkout(showSeatIds, token, points)
       window.location.href = payUrl
     } catch (e) { setError(e instanceof Error ? e.message : 'Đặt vé thất bại') }
     finally { setConfirming(false) }
   }
 
   return (
-    <div className="mx-auto max-w-5xl p-4 md:p-6">
-      <div className="mb-4 flex items-center justify-between">
+    <div className="mx-auto max-w-6xl p-4 md:p-6 animate-fadeIn">
+      <div className="mb-6 flex items-center justify-between">
         <div>
-          <h1 className="text-xl md:text-2xl font-semibold text-gray-900">Chọn ghế</h1>
-          <div className="text-sm text-gray-600">Suất chiếu #{stId}</div>
+          <h1 className="text-2xl md:text-3xl font-bold gradient-text mb-1">Chọn ghế</h1>
+          <div className="text-sm font-medium text-gray-600">Suất chiếu #{stId}</div>
         </div>
-        <button onClick={() => navigate(-1)} className="rounded-md border px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50">Quay lại</button>
+        <button 
+          onClick={() => navigate(-1)} 
+          className="group inline-flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm transition-all hover:border-sky-400 hover:bg-sky-50 hover:text-sky-700 hover:shadow-md"
+        >
+          <span className="transition-transform group-hover:-translate-x-0.5">←</span>
+          Quay lại
+        </button>
       </div>
 
-      {error && <div className="mb-3 rounded-md bg-red-50 px-3 py-2 text-sm text-red-700 ring-1 ring-red-200">{error}</div>}
+      {error && (
+        <div className="mb-4 rounded-xl bg-gradient-to-r from-red-50 to-pink-50 border border-red-200 px-4 py-3 text-sm font-medium text-red-700 ring-1 ring-red-200/50 shadow-sm animate-slideIn">
+          <div className="flex items-center gap-2">
+            <span className="text-lg">⚠️</span>
+            <span>{error}</span>
+          </div>
+        </div>
+      )}
       {loading ? (
-        <div className="text-sm text-gray-600">Đang tải ghế...</div>
+        <div className="flex items-center justify-center py-12">
+          <div className="text-center">
+            <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-sky-200 border-t-sky-600 mb-3" />
+            <div className="text-sm font-medium text-gray-600">Đang tải ghế...</div>
+          </div>
+        </div>
       ) : (
-        <div className="rounded-2xl bg-white p-4 shadow ring-1 ring-gray-100">
+        <div className="rounded-3xl bg-white p-6 md:p-8 shadow-xl ring-1 ring-slate-200/60">
           {/* Legend */}
-          <div className="mb-3 flex flex-wrap items-center gap-3 text-xs">
-            <span className="inline-flex items-center gap-1"><span className="inline-block h-3 w-3 rounded bg-emerald-500" /> Trống</span>
-            <span className="inline-flex items-center gap-1"><span className="inline-block h-3 w-3 rounded bg-amber-500" /> Đang giữ</span>
-            <span className="inline-flex items-center gap-1"><span className="inline-block h-3 w-3 rounded bg-gray-400" /> Hết</span>
-            <span className="inline-flex items-center gap-1"><span className="inline-block h-3 w-3 rounded bg-sky-600" /> Đã chọn</span>
+          <div className="mb-6 flex flex-wrap items-center justify-center gap-4 rounded-xl bg-gradient-to-r from-slate-50 to-sky-50 p-4 text-xs font-medium">
+            <span className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1.5 shadow-sm ring-1 ring-slate-200">
+              <span className="inline-block h-4 w-4 rounded bg-emerald-500 shadow-sm" /> 
+              <span className="text-slate-700">Trống</span>
+            </span>
+            <span className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1.5 shadow-sm ring-1 ring-slate-200">
+              <span className="inline-block h-4 w-4 rounded bg-amber-500 shadow-sm" /> 
+              <span className="text-slate-700">Đang giữ</span>
+            </span>
+            <span className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1.5 shadow-sm ring-1 ring-slate-200">
+              <span className="inline-block h-4 w-4 rounded bg-gray-400 shadow-sm" /> 
+              <span className="text-slate-700">Hết</span>
+            </span>
+            <span className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1.5 shadow-sm ring-1 ring-slate-200">
+              <span className="inline-block h-4 w-4 rounded bg-sky-600 shadow-sm" /> 
+              <span className="text-slate-700">Đã chọn</span>
+            </span>
           </div>
           {/* Screen */}
-          <div className="mx-auto mb-4 h-2 w-1/2 rounded-full bg-gradient-to-r from-gray-200 to-gray-300" />
+          <div className="relative mx-auto mb-8">
+            <div className="mx-auto h-3 w-3/4 rounded-full bg-gradient-to-r from-slate-300 via-slate-200 to-slate-300 shadow-inner" />
+            <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 text-center">
+              <span className="rounded-full bg-white px-4 py-1 text-xs font-bold text-slate-600 shadow-md ring-2 ring-slate-200">MÀN HÌNH</span>
+            </div>
+          </div>
 
           {/* Grid */}
       <div className="flex justify-center">
@@ -144,10 +209,17 @@ export default function SeatSelectionPage() {
                         <button
                           onClick={() => toggleSeat(s)}
                           disabled={s.status === 'SOLD' || s.status === 'BLOCKED' || holding}
-                          className={`relative inline-flex h-8 w-8 items-center justify-center rounded ${bg} ${cursor} text-white shadow-sm transition hover:brightness-110 ${extra}`}
+                          className={`group relative inline-flex h-9 w-9 items-center justify-center rounded-lg ${bg} ${cursor} text-white shadow-md transition-all hover:brightness-110 hover:scale-110 active:scale-95 ${extra} ${
+                            isSelected ? 'ring-2 ring-sky-400 ring-offset-2' : ''
+                          }`}
                           title={`${s.seatNumber} • ${currency(s.effectivePrice)}đ`}
                         >
-                          <span className="text-[11px] font-semibold">{s.col}</span>
+                          <span className="text-[11px] font-bold">{s.col}</span>
+                          {isSelected && (
+                            <span className="absolute -top-1 -right-1 inline-flex h-4 w-4 items-center justify-center rounded-full bg-sky-500 text-[8px] text-white shadow-lg">
+                              ✓
+                            </span>
+                          )}
                         </button>
                         {addVerticalAisle && idx === aisleIndex && (
                           <div className="mx-1 h-9 w-6 rounded-sm bg-gray-200" aria-hidden="true">
@@ -171,16 +243,74 @@ export default function SeatSelectionPage() {
       )}
 
       {/* Footer */}
-      <div className="sticky bottom-4 mt-6 rounded-2xl bg-white/90 p-3 shadow-lg ring-1 ring-gray-100 backdrop-blur">
-        <div className="flex flex-col items-center justify-between gap-3 md:flex-row">
-          <div className="text-sm text-gray-700">
-            Đã chọn: {selectedSeats.map((s) => s.seatNumber).join(', ') || '—'}
-          </div>
-          <div className="text-sm font-semibold text-gray-900">
-            Tổng tiền: {totalPrice > 0 ? `${currency(totalPrice)}đ` : '0đ'}
-          </div>
-          <div className="flex items-center gap-2">
-            <Button onClick={confirmBooking} loading={confirming}>Xác nhận đặt vé</Button>
+      <div className="sticky bottom-4 mt-8 rounded-2xl glass border border-white/60 p-4 shadow-2xl backdrop-blur-md">
+        <div className="space-y-4">
+          {/* Points discount section */}
+          {token && userPoints > 0 && totalPrice > 0 && (
+            <div className="rounded-xl bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 p-3">
+              <div className="flex items-center justify-between mb-2">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={usePoints}
+                    onChange={(e) => setUsePoints(e.target.checked)}
+                    className="h-4 w-4 rounded border-slate-300 text-sky-600 focus:ring-sky-500"
+                  />
+                  <span className="text-sm font-semibold text-gray-700">
+                    Sử dụng điểm thưởng ({Math.floor(userPoints)} điểm)
+                  </span>
+                </label>
+                {usePoints && (
+                  <span className="text-xs font-medium text-amber-700">
+                    Giảm: {currency(discountAmount)}đ
+                  </span>
+                )}
+              </div>
+              {usePoints && (
+                <div className="text-xs text-gray-600">
+                  1 điểm = 10 VND. Bạn có thể dùng tối đa {Math.min(Math.floor(userPoints), gameApi.vndToPoints(totalPrice))} điểm
+                </div>
+              )}
+            </div>
+          )}
+
+          <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
+            <div className="text-sm font-medium text-gray-700">
+              <span className="font-semibold text-sky-600">Đã chọn:</span>{' '}
+              {selectedSeats.length > 0 ? (
+                <span className="inline-flex flex-wrap gap-1">
+                  {selectedSeats.map((s) => (
+                    <span key={s.showSeatId} className="rounded-full bg-sky-100 px-2.5 py-1 text-xs font-bold text-sky-700 ring-1 ring-sky-200">
+                      {s.seatNumber}
+                    </span>
+                  ))}
+                </span>
+              ) : (
+                <span className="text-gray-400">—</span>
+              )}
+            </div>
+            <div className="text-right">
+              <div className="text-sm text-gray-600">
+                Tổng tiền: <span className="font-semibold">{currency(totalPrice)}đ</span>
+              </div>
+              {discountAmount > 0 && (
+                <div className="text-sm text-emerald-600">
+                  Giảm giá: <span className="font-semibold">-{currency(discountAmount)}đ</span>
+                </div>
+              )}
+              <div className="text-lg font-bold gradient-text">
+                Thành tiền: <span className="text-2xl">{currency(finalPrice)}đ</span>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <Button 
+                onClick={confirmBooking} 
+                loading={confirming}
+                className="rounded-xl px-6 py-3 text-base font-bold shadow-lg hover:shadow-xl transition-all"
+              >
+                {confirming ? 'Đang xử lý...' : 'Xác nhận đặt vé'}
+              </Button>
+            </div>
           </div>
         </div>
       </div>

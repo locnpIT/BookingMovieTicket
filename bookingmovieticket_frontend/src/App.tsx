@@ -23,6 +23,7 @@ import MovieBookingPage from './pages/MovieBookingPage'
 import PaymentResultPage from './pages/PaymentResultPage'
 import BookingHistoryPage from './pages/BookingHistoryPage'
 import ProfilePage from './pages/ProfilePage'
+import MiniGamePage from './pages/MiniGamePage'
 
 export default function App() {
   return (
@@ -36,6 +37,7 @@ export default function App() {
         <Route path="/movies/:movieId/book" element={<MovieBookingPage />} />
         <Route path="/book/:showtimeId" element={<SeatSelectionPage />} />
         <Route path="/payment/result" element={<PaymentResultPage />} />
+        <Route path="/games" element={<ProtectedRoute><MiniGamePage /></ProtectedRoute>} />
         <Route path="/account/bookings" element={<ProtectedRoute><BookingHistoryPage /></ProtectedRoute>} />
         <Route path="/account/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
       </Route>
