@@ -5,11 +5,14 @@ import HeroCarousel from '../components/home/HeroCarousel'
 import MovieGridSection from '../components/home/MovieGridSection'
 import TestimonialsSection from '../components/home/TestimonialsSection'
 import CategoryTabs from '../components/home/CategoryTabs'
+import CheckInWidget from '../components/CheckInWidget'
 import { movieApi } from '../services/movieApi'
 import type { MovieDTO } from '../services/movieApi'
 import type { Movie } from '../data/movies'
+import { useAuth } from '../context/AuthContext'
 
 export default function HomePage() {
+  const { token } = useAuth()
   const [location, setLocation] = useState('Hà Nội')
   const [search, setSearch] = useState('')
   const [all, setAll] = useState<Movie[]>([])
@@ -73,12 +76,21 @@ export default function HomePage() {
         <HeroCarousel slides={heroSlides} />
       </div>
       <div className="mx-auto max-w-7xl p-4 md:p-6 mt-8 animate-fadeIn">
-        <HomeHeader location={location} onLocationChange={setLocation} search={search} onSearchChange={setSearch} />
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-6">
+          <div className="lg:col-span-3">
+            <HomeHeader location={location} onLocationChange={setLocation} search={search} onSearchChange={setSearch} />
+          </div>
+          {token && (
+            <div className="lg:col-span-1">
+              <CheckInWidget />
+            </div>
+          )}
+        </div>
         <div className="mt-6">
           <CategoryTabs value={tab} onChange={setTab} />
         </div>
         {error && (
-          <div className="mt-4 rounded-xl bg-gradient-to-r from-red-50 to-pink-50 border border-red-200 px-4 py-3 text-sm font-medium text-red-700 ring-1 ring-red-200/50 shadow-sm animate-slideIn">
+          <div className="mt-4 rounded-xl bg-gradient-to-r from-red-900/40 to-red-800/40 border border-red-500/50 px-4 py-3 text-sm font-medium text-red-300 ring-1 ring-red-500/50 shadow-lg shadow-red-500/20 animate-slideIn">
             <div className="flex items-center gap-2">
               <span className="text-lg">⚠️</span>
               <span>{error}</span>
@@ -88,8 +100,8 @@ export default function HomePage() {
         {loading ? (
           <div className="flex items-center justify-center py-16">
             <div className="text-center">
-              <div className="inline-block h-10 w-10 animate-spin rounded-full border-4 border-sky-200 border-t-sky-600 mb-4" />
-              <div className="text-sm font-medium text-gray-600">Đang tải phim...</div>
+              <div className="inline-block h-10 w-10 animate-spin rounded-full border-4 border-red-500/30 border-t-amber-500 mb-4" />
+              <div className="text-sm font-medium text-slate-300">Đang tải phim...</div>
             </div>
           </div>
         ) : (

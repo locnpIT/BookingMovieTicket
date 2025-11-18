@@ -154,11 +154,11 @@ export default function MemoryCardGame({ onGameEnd }: { onGameEnd: (score: numbe
 
   if (loadingPokemon) {
     return (
-      <div className="rounded-3xl bg-gradient-to-br from-purple-50 to-pink-50 p-8 text-center border border-purple-200">
+      <div className="rounded-3xl glass-cinema p-8 text-center border border-red-500/30">
         <div className="flex items-center justify-center py-8">
           <div className="text-center">
-            <div className="inline-block h-10 w-10 animate-spin rounded-full border-4 border-purple-200 border-t-purple-600 mb-4" />
-            <div className="text-sm font-medium text-gray-600">Đang tải Pokemon...</div>
+            <div className="inline-block h-10 w-10 animate-spin rounded-full border-4 border-red-500/30 border-t-amber-500 mb-4" />
+            <div className="text-sm font-medium text-slate-300">Đang tải Pokemon...</div>
           </div>
         </div>
       </div>
@@ -167,23 +167,23 @@ export default function MemoryCardGame({ onGameEnd }: { onGameEnd: (score: numbe
 
   if (!gameStarted) {
     return (
-      <div className="rounded-3xl bg-gradient-to-br from-purple-50 to-pink-50 p-8 text-center border border-purple-200">
+      <div className="rounded-3xl glass-cinema p-8 text-center border border-red-500/30">
         <div className="mb-6">
-          <div className="inline-flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-purple-500 to-pink-500 text-4xl mb-4 shadow-lg">
+          <div className="inline-flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-red-600 via-red-500 to-amber-500 text-4xl mb-4 shadow-lg ring-2 ring-amber-500/50 animate-pulse-glow">
             🎴
           </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Trò chơi Lật Thẻ Pokemon</h2>
-          <p className="text-gray-600 mb-4">
+          <h2 className="text-2xl font-bold gradient-text-cinema mb-2">Trò chơi Lật Thẻ Pokemon</h2>
+          <p className="text-slate-300 mb-4">
             Tìm các cặp Pokemon giống nhau. Càng ít lượt lật, điểm càng cao!
           </p>
-          <div className="inline-flex items-center gap-2 rounded-full bg-purple-100 px-4 py-2 text-sm font-semibold text-purple-700">
+          <div className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-red-500/20 to-amber-500/20 border border-amber-500/30 px-4 py-2 text-sm font-semibold text-amber-300">
             <span>💡</span>
             <span>Điểm tối đa: 100 điểm</span>
           </div>
         </div>
         <Button 
           onClick={initializeGame} 
-          className="px-8 py-3 text-base"
+          className="px-8 py-3 text-base btn-cinema"
           disabled={pokemonList.length === 0}
         >
           {pokemonList.length === 0 ? 'Đang tải...' : 'Bắt đầu chơi'}
@@ -194,56 +194,129 @@ export default function MemoryCardGame({ onGameEnd }: { onGameEnd: (score: numbe
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between rounded-xl bg-white p-4 shadow-md">
-        <div className="text-sm font-medium text-gray-600">
-          Lượt lật: <span className="font-bold text-purple-600">{moves}</span>
+      <div className="flex items-center justify-between rounded-xl glass-cinema border border-red-500/30 p-4 shadow-lg">
+        <div className="text-sm font-medium text-slate-300">
+          Lượt lật: <span className="font-bold text-amber-400">{moves}</span>
         </div>
-        <div className="text-sm font-medium text-gray-600">
-          Đã khớp: <span className="font-bold text-emerald-600">{matches} / {POKEMON_COUNT}</span>
+        <div className="text-sm font-medium text-slate-300">
+          Đã khớp: <span className="font-bold text-emerald-400">{matches} / {POKEMON_COUNT}</span>
         </div>
       </div>
 
-      <div className="grid grid-cols-4 gap-3">
+      <div className="grid grid-cols-4 gap-3 md:gap-4 perspective-1000">
         {cards.map((card, idx) => (
           <button
-            key={idx}
+            key={`${card.id}-${idx}`}
             onClick={() => handleCardClick(idx)}
             disabled={card.flipped || card.matched || gameOver}
-            className={`relative h-24 md:h-28 rounded-xl transition-all duration-300 overflow-hidden ${
+            className={`relative h-24 md:h-32 w-full rounded-xl transition-all duration-500 overflow-hidden preserve-3d ${
               card.matched
-                ? 'bg-emerald-500 scale-95 cursor-not-allowed ring-4 ring-emerald-300'
+                ? 'scale-95 cursor-not-allowed'
                 : card.flipped
-                ? 'bg-gradient-to-br from-purple-400 to-pink-400 scale-105 shadow-lg cursor-pointer ring-2 ring-purple-300'
-                : 'bg-gradient-to-br from-slate-300 to-slate-400 hover:from-slate-400 hover:to-slate-500 hover:scale-105 cursor-pointer'
-            } ${gameOver ? 'cursor-not-allowed' : ''}`}
+                ? 'scale-105 cursor-pointer'
+                : 'hover:scale-105 cursor-pointer'
+            } ${gameOver ? 'cursor-not-allowed' : ''} ${
+              card.flipped ? 'rotate-y-180' : ''
+            }`}
+            style={{
+              transformStyle: 'preserve-3d',
+              transform: card.flipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
+            }}
           >
-            {card.flipped || card.matched ? (
-              <div className="absolute inset-0 flex flex-col items-center justify-center p-2">
-                <img
-                  src={card.pokemon.image}
-                  alt={card.pokemon.name}
-                  className="w-full h-full object-contain"
-                />
+            {/* Card Back (Question Mark) */}
+            <div 
+              className={`absolute inset-0 rounded-xl backface-hidden flex items-center justify-center transition-all duration-500 ${
+                card.flipped || card.matched
+                  ? 'opacity-0 rotate-y-180'
+                  : 'opacity-100 rotate-y-0'
+              }`}
+              style={{
+                transform: card.flipped || card.matched ? 'rotateY(180deg)' : 'rotateY(0deg)',
+                backfaceVisibility: 'hidden',
+              }}
+            >
+              <div className="relative w-full h-full bg-gradient-to-br from-slate-700 via-slate-800 to-slate-900 rounded-xl border-2 border-amber-500/30 shadow-lg hover:border-amber-500/60 transition-all duration-300">
+                {/* Shimmer effect on back */}
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-amber-500/20 to-transparent animate-shimmer bg-[length:200%_100%]" />
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <span className="text-4xl md:text-5xl drop-shadow-lg filter brightness-110">❓</span>
+                </div>
+                {/* Glow effect */}
+                <div className="absolute inset-0 rounded-xl shadow-[0_0_20px_rgba(234,179,8,0.3)] opacity-0 hover:opacity-100 transition-opacity duration-300" />
+              </div>
+            </div>
+
+            {/* Card Front (Pokemon Image) */}
+            <div 
+              className={`absolute inset-0 rounded-xl backface-hidden flex flex-col items-center justify-center p-2 transition-all duration-500 ${
+                card.flipped || card.matched
+                  ? 'opacity-100 rotate-y-0'
+                  : 'opacity-0 rotate-y-180'
+              }`}
+              style={{
+                transform: card.flipped || card.matched ? 'rotateY(0deg)' : 'rotateY(180deg)',
+                backfaceVisibility: 'hidden',
+              }}
+            >
+              <div className={`relative w-full h-full rounded-xl overflow-hidden ${
+                card.matched
+                  ? 'bg-gradient-to-br from-emerald-500 via-emerald-600 to-emerald-700 ring-4 ring-emerald-400/50 shadow-[0_0_30px_rgba(16,185,129,0.6)]'
+                  : 'bg-gradient-to-br from-red-600 via-red-500 to-amber-500 ring-2 ring-amber-400/50 shadow-lg'
+              } transition-all duration-500`}>
+                {/* Glow effect when flipped */}
+                {card.flipped && !card.matched && (
+                  <div className="absolute inset-0 bg-gradient-to-br from-amber-500/30 to-red-500/30 animate-pulse" />
+                )}
+                
+                {/* Pokemon Image */}
+                <div className="relative w-full h-full flex items-center justify-center p-2">
+                  <img
+                    src={card.pokemon.image}
+                    alt={card.pokemon.name}
+                    className="w-full h-full object-contain drop-shadow-2xl filter brightness-110"
+                  />
+                </div>
+
+                {/* Match Success Overlay */}
                 {card.matched && (
-                  <div className="absolute inset-0 bg-emerald-500/80 flex items-center justify-center">
-                    <span className="text-white text-3xl font-bold">✓</span>
-                  </div>
+                  <>
+                    <div className="absolute inset-0 bg-gradient-to-br from-emerald-400/90 to-emerald-600/90 flex items-center justify-center animate-scaleIn">
+                      <div className="text-center">
+                        <span className="text-4xl md:text-5xl font-bold text-white drop-shadow-2xl animate-bounce">✓</span>
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <div className="w-20 h-20 rounded-full bg-emerald-400/50 animate-ping" />
+                        </div>
+                      </div>
+                    </div>
+                    {/* Sparkle particles effect */}
+                    {[...Array(8)].map((_, i) => (
+                      <div
+                        key={i}
+                        className="absolute w-2 h-2 bg-yellow-300 rounded-full animate-ping"
+                        style={{
+                          top: `${20 + (i * 10)}%`,
+                          left: `${15 + (i * 12)}%`,
+                          animationDelay: `${i * 0.1}s`,
+                          animationDuration: '1s',
+                        }}
+                      />
+                    ))}
+                  </>
                 )}
               </div>
-            ) : (
-              <div className="absolute inset-0 flex items-center justify-center">
-                <span className="text-4xl">❓</span>
-              </div>
-            )}
+            </div>
           </button>
         ))}
       </div>
 
       {gameOver && (
-        <div className="rounded-xl bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 p-4 text-center">
-          <div className="text-lg font-bold text-emerald-700 mb-2">🎉 Hoàn thành!</div>
-          <div className="text-sm text-gray-600">
-            Bạn đã hoàn thành với {moves} lượt lật
+        <div className="rounded-xl bg-gradient-to-r from-emerald-900/40 to-emerald-800/40 border border-emerald-500/50 p-4 text-center shadow-lg shadow-emerald-500/20 animate-scaleIn">
+          <div className="text-lg font-bold gradient-text-cinema mb-2 flex items-center justify-center gap-2">
+            <span className="text-2xl animate-bounce">🎉</span>
+            <span>Hoàn thành!</span>
+          </div>
+          <div className="text-sm text-slate-300">
+            Bạn đã hoàn thành với <span className="font-bold text-amber-400">{moves}</span> lượt lật
           </div>
         </div>
       )}
